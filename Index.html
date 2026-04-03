@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrillGen — AI Football Coaching Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #16a34a;
+    --green-light: #22c55e;
+    --green-pale: #dcfce7;
+    --green-dark: #14532d;
+    --white: #ffffff;
+    --off-white: #f8fafc;
+    --slate: #0f172a;
+    --slate-mid: #334155;
+    --slate-light: #64748b;
+    --border: #e2e8f0;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+body {
+font-family: ‘Outfit’, sans-serif;
+background: var(–off-white);
+color: var(–slate);
+overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+background: rgba(255,255,255,0.93);
+backdrop-filter: blur(14px);
+border-bottom: 1px solid var(–border);
+padding: 0 5%;
+height: 66px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.nav-logo {
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 22px;
+color: var(–slate);
+display: flex;
+align-items: center;
+gap: 10px;
+text-decoration: none;
+}
+
+.logo-icon {
+background: var(–slate);
+color: white;
+width: 36px; height: 36px;
+border-radius: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 18px;
+}
+
+.logo-gen {
+color: var(–green);
+}
+
+.nav-links {
+display: flex;
+gap: 32px;
+list-style: none;
+}
+
+.nav-links a {
+text-decoration: none;
+color: var(–slate-mid);
+font-size: 15px;
+font-weight: 500;
+transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(–green); }
+
+.nav-cta { display: flex; gap: 12px; align-items: center; }
+
+.btn-ghost {
+padding: 9px 20px;
+border: 1.5px solid var(–border);
+border-radius: 10px;
+background: none;
+color: var(–slate);
+font-size: 14px;
+font-weight: 500;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+}
+
+.btn-ghost:hover { border-color: var(–green); color: var(–green); }
+
+.btn-primary {
+padding: 9px 22px;
+background: var(–green);
+color: white;
+border: none;
+border-radius: 10px;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+box-shadow: 0 2px 8px rgba(22,163,74,0.3);
+}
+
+.btn-primary:hover {
+background: #15803d;
+transform: translateY(-1px);
+box-shadow: 0 4px 16px rgba(22,163,74,0.4);
+}
+
+/* ── HERO ── */
+.hero {
+min-height: 100vh;
+padding-top: 66px;
+display: flex;
+align-items: center;
+position: relative;
+overflow: hidden;
+background: var(–slate);
+}
+
+.hero-bg {
+position: absolute;
+inset: 0;
+background:
+repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 61px),
+repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(255,255,255,0.012) 60px, rgba(255,255,255,0.012) 61px),
+linear-gradient(160deg, #0a1a0a 0%, #0f1f0f 50%, #0a1512 100%);
+}
+
+.hero-glow {
+position: absolute;
+top: 20%; right: 10%;
+width: 500px; height: 500px;
+background: radial-gradient(circle, rgba(22,163,74,0.1) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.hero-content {
+position: relative;
+z-index: 2;
+max-width: 1200px;
+margin: 0 auto;
+padding: 80px 5%;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 72px;
+align-items: center;
+}
+
+.hero-tag {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+background: rgba(22,163,74,0.12);
+border: 1px solid rgba(22,163,74,0.25);
+border-radius: 100px;
+padding: 7px 16px;
+font-size: 13px;
+font-weight: 600;
+color: #4ade80;
+letter-spacing: 0.5px;
+margin-bottom: 24px;
+animation: fadeUp 0.6s ease forwards;
+}
+
+.hero-tag::before {
+content: ‘’;
+width: 7px; height: 7px;
+background: #4ade80;
+border-radius: 50%;
+animation: blink 2s infinite;
+}
+
+@keyframes blink {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.3; }
+}
+
+.hero-h1 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(38px, 5vw, 62px);
+font-weight: 800;
+line-height: 1.07;
+color: white;
+margin-bottom: 22px;
+animation: fadeUp 0.6s 0.1s ease both;
+}
+
+.hero-h1 em {
+font-style: normal;
+color: #4ade80;
+}
+
+.hero-h1 .brand-name {
+font-style: normal;
+background: linear-gradient(135deg, #4ade80, #22c55e);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+
+.hero-sub {
+font-size: 17px;
+line-height: 1.75;
+color: #94a3b8;
+margin-bottom: 40px;
+max-width: 480px;
+animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-actions {
+display: flex;
+gap: 14px;
+flex-wrap: wrap;
+animation: fadeUp 0.6s 0.3s ease both;
+}
+
+.btn-hero {
+padding: 14px 30px;
+background: var(–green);
+color: white;
+border: none;
+border-radius: 12px;
+font-size: 16px;
+font-weight: 700;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+box-shadow: 0 4px 20px rgba(22,163,74,0.4);
+}
+
+.btn-hero:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 32px rgba(22,163,74,0.5);
+}
+
+.btn-hero-ghost {
+padding: 14px 28px;
+border: 1.5px solid rgba(255,255,255,0.18);
+border-radius: 12px;
+background: none;
+color: white;
+font-size: 16px;
+font-weight: 500;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+}
+
+.btn-hero-ghost:hover {
+border-color: rgba(255,255,255,0.45);
+background: rgba(255,255,255,0.05);
+}
+
+.hero-stats {
+display: flex;
+gap: 32px;
+margin-top: 48px;
+animation: fadeUp 0.6s 0.4s ease both;
+}
+
+.stat {
+border-left: 2px solid rgba(74,222,128,0.35);
+padding-left: 16px;
+}
+
+.stat-num {
+font-family: ‘Syne’, sans-serif;
+font-size: 26px;
+font-weight: 800;
+color: white;
+}
+
+.stat-label {
+font-size: 12px;
+color: #64748b;
+margin-top: 3px;
+}
+
+/* Generator Card */
+.generator-card {
+background: rgba(255,255,255,0.04);
+backdrop-filter: blur(20px);
+border: 1px solid rgba(255,255,255,0.09);
+border-radius: 22px;
+padding: 28px;
+animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.card-topbar {
+display: flex;
+align-items: center;
+gap: 8px;
+margin-bottom: 20px;
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.card-label {
+font-size: 12px;
+font-weight: 700;
+color: #475569;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+margin-left: 6px;
+}
+
+.search-wrap {
+background: rgba(255,255,255,0.06);
+border: 1.5px solid rgba(255,255,255,0.1);
+border-radius: 12px;
+padding: 13px 16px;
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 14px;
+transition: border-color 0.2s;
+}
+
+.search-wrap:focus-within { border-color: rgba(74,222,128,0.45); }
+
+.search-input {
+background: none;
+border: none;
+outline: none;
+color: white;
+font-size: 14px;
+font-family: ‘Outfit’, sans-serif;
+flex: 1;
+caret-color: #4ade80;
+}
+
+.search-input::placeholder { color: #3f4f5e; }
+
+.search-btn {
+background: var(–green);
+border: none;
+color: white;
+padding: 8px 16px;
+border-radius: 8px;
+font-size: 13px;
+font-weight: 700;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+white-space: nowrap;
+transition: all 0.2s;
+}
+
+.search-btn:hover { background: #15803d; }
+
+.quick-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 7px;
+margin-bottom: 18px;
+}
+
+.qtag {
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.09);
+color: #94a3b8;
+padding: 5px 12px;
+border-radius: 100px;
+font-size: 12px;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.qtag:hover {
+background: rgba(74,222,128,0.1);
+border-color: rgba(74,222,128,0.3);
+color: #4ade80;
+}
+
+.result-preview {
+background: rgba(22,163,74,0.07);
+border: 1px solid rgba(22,163,74,0.18);
+border-radius: 14px;
+padding: 18px;
+}
+
+.result-label {
+font-size: 11px;
+font-weight: 700;
+color: #4ade80;
+letter-spacing: 1px;
+text-transform: uppercase;
+margin-bottom: 14px;
+}
+
+.drill-row {
+display: flex;
+align-items: flex-start;
+gap: 12px;
+padding: 10px 0;
+border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.drill-row:last-child { border-bottom: none; }
+
+.drill-num {
+width: 24px; height: 24px;
+background: var(–green);
+color: white;
+border-radius: 6px;
+font-size: 12px;
+font-weight: 700;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+margin-top: 1px;
+}
+
+.drill-name {
+font-size: 14px;
+font-weight: 600;
+color: white;
+margin-bottom: 4px;
+}
+
+.drill-meta {
+font-size: 12px;
+color: #4a5568;
+display: flex;
+gap: 10px;
+}
+
+/* ── SHARED SECTION ── */
+.section-tag {
+display: inline-block;
+background: var(–green-pale);
+color: var(–green-dark);
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+padding: 6px 14px;
+border-radius: 100px;
+margin-bottom: 16px;
+}
+
+.section-h2 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(28px, 4vw, 44px);
+font-weight: 800;
+line-height: 1.1;
+color: var(–slate);
+margin-bottom: 14px;
+}
+
+.section-sub {
+font-size: 17px;
+color: var(–slate-light);
+line-height: 1.75;
+max-width: 560px;
+}
+
+/* ── HOW IT WORKS ── */
+.how-section {
+background: white;
+padding: 100px 0;
+}
+
+.how-inner {
+max-width: 1200px;
+margin: 0 auto;
+padding: 0 5%;
+}
+
+.how-header {
+text-align: center;
+margin-bottom: 64px;
+}
+
+.how-header .section-sub { margin: 0 auto; }
+
+.steps-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 28px;
+position: relative;
+}
+
+.steps-grid::before {
+content: ‘’;
+position: absolute;
+top: 34px;
+left: 17%;
+right: 17%;
+height: 2px;
+background: linear-gradient(90deg, var(–green-pale), var(–green), var(–green-pale));
+z-index: 0;
+}
+
+.step-card {
+background: var(–off-white);
+border: 1px solid var(–border);
+border-radius: 20px;
+padding: 30px;
+position: relative;
+z-index: 1;
+transition: all 0.3s;
+}
+
+.step-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 14px 40px rgba(0,0,0,0.08);
+border-color: var(–green-light);
+}
+
+.step-icon {
+width: 54px; height: 54px;
+background: var(–green);
+border-radius: 14px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 22px;
+margin-bottom: 18px;
+box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+}
+
+.step-num {
+position: absolute;
+top: -12px; right: 22px;
+background: white;
+border: 2px solid var(–border);
+color: var(–slate-light);
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 12px;
+padding: 2px 10px;
+border-radius: 100px;
+}
+
+.step-title {
+font-family: ‘Syne’, sans-serif;
+font-size: 19px;
+font-weight: 700;
+color: var(–slate);
+margin-bottom: 10px;
+}
+
+.step-desc {
+font-size: 14px;
+line-height: 1.75;
+color: var(–slate-light);
+}
+
+/* ── FEATURES ── */
+.features-section {
+max-width: 1200px;
+margin: 0 auto;
+padding: 100px 5%;
+}
+
+.features-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 22px;
+margin-top: 52px;
+}
+
+.feat-card {
+background: white;
+border: 1px solid var(–border);
+border-radius: 20px;
+padding: 28px;
+transition: all 0.3s;
+}
+
+.feat-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 12px 36px rgba(0,0,0,0.08);
+border-color: var(–green-light);
+}
+
+.feat-icon { font-size: 30px; margin-bottom: 14px; }
+
+.feat-title {
+font-family: ‘Syne’, sans-serif;
+font-size: 17px;
+font-weight: 700;
+color: var(–slate);
+margin-bottom: 10px;
+}
+
+.feat-desc {
+font-size: 14px;
+line-height: 1.7;
+color: var(–slate-light);
+}
+
+.feat-badge {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+background: var(–green-pale);
+color: var(–green-dark);
+font-size: 11px;
+font-weight: 700;
+padding: 4px 10px;
+border-radius: 100px;
+margin-top: 12px;
+letter-spacing: 0.3px;
+}
+
+/* ── AUDIENCE ── */
+.audience-section {
+background: var(–slate);
+padding: 100px 0;
+}
+
+.audience-inner {
+max-width: 1200px;
+margin: 0 auto;
+padding: 0 5%;
+}
+
+.audience-header {
+text-align: center;
+margin-bottom: 44px;
+}
+
+.audience-header .section-h2 { color: white; }
+.audience-header .section-sub { color: #64748b; margin: 0 auto; }
+
+.tabs {
+display: flex;
+gap: 8px;
+justify-content: center;
+margin-bottom: 36px;
+flex-wrap: wrap;
+}
+
+.tab-btn {
+padding: 10px 24px;
+border-radius: 100px;
+border: 1.5px solid rgba(255,255,255,0.1);
+background: none;
+color: #64748b;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+}
+
+.tab-btn.active, .tab-btn:hover {
+background: var(–green);
+border-color: var(–green);
+color: white;
+}
+
+.tab-content { display: none; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.tab-content.active { display: grid; }
+
+.tab-list { list-style: none; margin-top: 22px; display: flex; flex-direction: column; gap: 14px; }
+
+.tab-list li {
+display: flex;
+align-items: flex-start;
+gap: 12px;
+font-size: 15px;
+color: #94a3b8;
+line-height: 1.6;
+}
+
+.tab-list li::before {
+content: ‘✓’;
+width: 22px; height: 22px;
+background: rgba(22,163,74,0.18);
+color: #4ade80;
+border-radius: 6px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 12px;
+font-weight: 700;
+flex-shrink: 0;
+margin-top: 1px;
+}
+
+.tab-visual {
+background: rgba(255,255,255,0.03);
+border: 1px solid rgba(255,255,255,0.07);
+border-radius: 20px;
+padding: 28px;
+display: flex;
+flex-direction: column;
+gap: 14px;
+}
+
+.mock-prompt {
+background: rgba(22,163,74,0.09);
+border: 1px solid rgba(22,163,74,0.18);
+border-radius: 12px;
+padding: 14px 16px;
+font-size: 14px;
+color: #4ade80;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.mock-result {
+background: rgba(255,255,255,0.03);
+border: 1px solid rgba(255,255,255,0.07);
+border-radius: 12px;
+padding: 16px;
+}
+
+.mock-result-title {
+font-size: 14px;
+font-weight: 600;
+color: white;
+margin-bottom: 10px;
+}
+
+.mock-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+
+.mock-tag {
+background: rgba(255,255,255,0.05);
+color: #64748b;
+padding: 4px 10px;
+border-radius: 6px;
+font-size: 12px;
+}
+
+/* ── PRICING ── */
+.pricing-section {
+max-width: 1200px;
+margin: 0 auto;
+padding: 100px 5%;
+}
+
+.pricing-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 22px;
+margin-top: 52px;
+}
+
+.price-card {
+background: white;
+border: 1.5px solid var(–border);
+border-radius: 24px;
+padding: 34px 26px;
+transition: all 0.3s;
+position: relative;
+}
+
+.price-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 16px 48px rgba(0,0,0,0.09);
+}
+
+.price-card.featured {
+background: var(–slate);
+border-color: var(–green);
+box-shadow: 0 8px 32px rgba(22,163,74,0.18);
+}
+
+.popular-badge {
+position: absolute;
+top: -13px; left: 50%;
+transform: translateX(-50%);
+background: var(–green);
+color: white;
+font-size: 12px;
+font-weight: 700;
+padding: 4px 16px;
+border-radius: 100px;
+white-space: nowrap;
+}
+
+.plan-name {
+font-family: ‘Syne’, sans-serif;
+font-size: 13px;
+font-weight: 700;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–slate-light);
+margin-bottom: 12px;
+}
+
+.price-card.featured .plan-name { color: #64748b; }
+
+.plan-price {
+font-family: ‘Syne’, sans-serif;
+font-size: 46px;
+font-weight: 800;
+color: var(–slate);
+line-height: 1;
+margin-bottom: 4px;
+}
+
+.price-card.featured .plan-price { color: white; }
+.plan-price sup { font-size: 20px; vertical-align: super; font-weight: 600; }
+
+.plan-per { font-size: 13px; color: var(–slate-light); margin-bottom: 26px; }
+.price-card.featured .plan-per { color: #64748b; }
+
+.plan-feats {
+list-style: none;
+display: flex;
+flex-direction: column;
+gap: 11px;
+margin-bottom: 26px;
+}
+
+.plan-feats li {
+font-size: 14px;
+color: var(–slate-mid);
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.price-card.featured .plan-feats li { color: #94a3b8; }
+
+.plan-feats li::before {
+content: ‘✓’;
+color: var(–green);
+font-weight: 700;
+font-size: 12px;
+}
+
+.btn-plan {
+width: 100%;
+padding: 13px;
+border-radius: 12px;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+border: none;
+}
+
+.btn-outline { background: none; border: 1.5px solid var(–border); color: var(–slate); }
+.btn-outline:hover { border-color: var(–green); color: var(–green); }
+.btn-solid { background: var(–green); color: white; box-shadow: 0 4px 14px rgba(22,163,74,0.3); }
+.btn-solid:hover { background: #15803d; transform: translateY(-1px); }
+
+/* ── TESTIMONIALS ── */
+.testi-section {
+background: var(–off-white);
+border-top: 1px solid var(–border);
+padding: 100px 0;
+}
+
+.testi-inner {
+max-width: 1200px;
+margin: 0 auto;
+padding: 0 5%;
+}
+
+.testi-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 22px;
+margin-top: 48px;
+}
+
+.testi-card {
+background: white;
+border: 1px solid var(–border);
+border-radius: 20px;
+padding: 28px;
+transition: all 0.3s;
+}
+
+.testi-card:hover {
+box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+transform: translateY(-3px);
+}
+
+.stars { color: #f59e0b; font-size: 15px; margin-bottom: 14px; letter-spacing: 2px; }
+
+.testi-text {
+font-size: 15px;
+line-height: 1.75;
+color: var(–slate-mid);
+margin-bottom: 20px;
+font-style: italic;
+}
+
+.testi-author { display: flex; align-items: center; gap: 12px; }
+
+.author-av {
+width: 42px; height: 42px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 17px;
+font-weight: 700;
+color: white;
+font-family: ‘Syne’, sans-serif;
+}
+
+.author-name { font-weight: 600; font-size: 14px; color: var(–slate); }
+.author-role { font-size: 12px; color: var(–slate-light); margin-top: 2px; }
+
+/* ── CTA ── */
+.cta-section {
+background: var(–green);
+padding: 80px 5%;
+text-align: center;
+}
+
+.cta-section h2 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(26px, 4vw, 46px);
+font-weight: 800;
+color: white;
+margin-bottom: 14px;
+}
+
+.cta-section p { font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 34px; }
+
+.btn-white {
+padding: 14px 36px;
+background: white;
+color: var(–green-dark);
+border: none;
+border-radius: 12px;
+font-size: 16px;
+font-weight: 700;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.2); }
+
+/* ── FOOTER ── */
+footer {
+background: var(–slate);
+padding: 44px 5%;
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 16px;
+}
+
+.footer-logo {
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 20px;
+color: white;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.footer-logo-gen { color: var(–green); }
+
+.footer-links { display: flex; gap: 24px; list-style: none; flex-wrap: wrap; }
+.footer-links a { text-decoration: none; color: #64748b; font-size: 14px; transition: color 0.2s; }
+.footer-links a:hover { color: #4ade80; }
+
+.footer-copy { font-size: 13px; color: #475569; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+opacity: 0;
+transform: translateY(24px);
+transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+.hero-content { grid-template-columns: 1fr; gap: 44px; }
+.steps-grid { grid-template-columns: 1fr; }
+.steps-grid::before { display: none; }
+.features-grid { grid-template-columns: repeat(2, 1fr); }
+.pricing-grid { grid-template-columns: 1fr; max-width: 380px; margin: 52px auto 0; }
+.tab-content.active { grid-template-columns: 1fr; }
+.testi-grid { grid-template-columns: 1fr; }
+.nav-links { display: none; }
+footer { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 580px) {
+.features-grid { grid-template-columns: 1fr; }
+.hero-stats { flex-wrap: wrap; gap: 18px; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">⚽</div>
+    Drill<span class="logo-gen">Gen</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#audience">For Coaches</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn-ghost">Log In</button>
+    <button class="btn-primary">Start Free Trial</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-tag">⚡ AI-Powered Football Coaching</div>
+      <h1 class="hero-h1">
+        Generate elite<br>
+        <em>football drills</em><br>
+        in seconds
+      </h1>
+      <p class="hero-sub">
+        Type what your team needs. DrillGen instantly creates EPL-inspired drills, animated pitch diagrams, and full session plans — built for grassroots coaches, parents, and football fans worldwide.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-hero">Start Free — No Card Needed →</button>
+        <button class="btn-hero-ghost">Watch Demo</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">500+</div>
+          <div class="stat-label">EPL-inspired drills</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2 min</div>
+          <div class="stat-label">Full session plan</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">All ages</div>
+          <div class="stat-label">U6 through adult</div>
+        </div>
+      </div>
+    </div>
+
+```
+<!-- Generator Card -->
+<div class="generator-card">
+  <div class="card-topbar">
+    <div class="dot" style="background:#ef4444"></div>
+    <div class="dot" style="background:#f59e0b"></div>
+    <div class="dot" style="background:#22c55e"></div>
+    <span class="card-label">DrillGen AI</span>
+  </div>
+
+  <div class="search-wrap">
+    <span style="font-size:16px">⚽</span>
+    <input class="search-input" type="text" id="heroInput" placeholder="e.g. 5 shooting drills for U10s tonight..."/>
+    <button class="search-btn" onclick="handleSearch()">Generate</button>
+  </div>
+
+  <div class="quick-tags">
+    <span class="qtag" onclick="setQuery('Passing drills for beginners')">⚽ Passing</span>
+    <span class="qtag" onclick="setQuery('Liverpool-style pressing drills')">🔴 Pressing</span>
+    <span class="qtag" onclick="setQuery('Fun warm up drills for U8s')">🧡 Warm Up</span>
+    <span class="qtag" onclick="setQuery('Defensive shape for U14s')">🛡️ Defence</span>
+    <span class="qtag" onclick="setQuery('Corner kick set pieces')">📐 Set Pieces</span>
+  </div>
+
+  <div class="result-preview">
+    <div class="result-label">✨ Example Results</div>
+    <div class="drill-row">
+      <div class="drill-num">1</div>
+      <div>
+        <div class="drill-name">Salah's Diagonal Run & Finish</div>
+        <div class="drill-meta"><span>⏱ 15 mins</span><span>👥 8–14 players</span><span>🟠 6 cones</span></div>
+      </div>
+    </div>
+    <div class="drill-row">
+      <div class="drill-num">2</div>
+      <div>
+        <div class="drill-name">Haaland Box Arrival Drill</div>
+        <div class="drill-meta"><span>⏱ 12 mins</span><span>👥 6–10 players</span><span>🟠 4 cones</span></div>
+      </div>
+    </div>
+    <div class="drill-row">
+      <div class="drill-num">3</div>
+      <div>
+        <div class="drill-name">First-Time Finish Circuit</div>
+        <div class="drill-meta"><span>⏱ 20 mins</span><span>👥 10–16 players</span><span>🟠 8 cones</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+
+<div class="how-section" id="how">
+  <div class="how-inner">
+    <div class="how-header fade-up">
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-h2">From idea to pitch in seconds</h2>
+      <p class="section-sub">No more flicking through YouTube or coaching manuals. DrillGen builds your session plan instantly.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card fade-up">
+        <span class="step-num">01</span>
+        <div class="step-icon">✍️</div>
+        <div class="step-title">Type What You Need</div>
+        <p class="step-desc">Tell DrillGen exactly what you want — drill type, age group, player count, equipment. Plain English, no forms to fill.</p>
+      </div>
+      <div class="step-card fade-up" style="transition-delay:0.1s">
+        <span class="step-num">02</span>
+        <div class="step-icon">🤖</div>
+        <div class="step-title">AI Generates Your Session</div>
+        <p class="step-desc">DrillGen instantly creates drills with full instructions, animated pitch diagrams, coaching cues, and EPL player references.</p>
+      </div>
+      <div class="step-card fade-up" style="transition-delay:0.2s">
+        <span class="step-num">03</span>
+        <div class="step-icon">📋</div>
+        <div class="step-title">Coach With Confidence</div>
+        <p class="step-desc">Save your session, share it with parents, and take it straight to the pitch. Clear, visual, and ready to go.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+
+<div class="features-section" id="features">
+  <div class="fade-up">
+    <div class="section-tag">Features</div>
+    <h2 class="section-h2">Everything a coach actually needs</h2>
+    <p class="section-sub">Built from real coaching experience. Every feature solves a problem coaches face every single week.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card fade-up">
+      <div class="feat-icon">⚽</div>
+      <div class="feat-title">AI Drill Generator</div>
+      <p class="feat-desc">Type any request and get fully structured drills instantly. Shooting, passing, pressing, defending — any topic, any age group.</p>
+      <div class="feat-badge">⭐ EPL-Inspired</div>
+    </div>
+    <div class="feat-card fade-up" style="transition-delay:0.05s">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-title">Animated Pitch Diagrams</div>
+      <p class="feat-desc">Visual pitch diagrams with player movements, cone setups, and passing lanes. Coaches see it, players understand it instantly.</p>
+    </div>
+    <div class="feat-card fade-up" style="transition-delay:0.1s">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title">Session Planner</div>
+      <p class="feat-desc">Build a full training session in under 2 minutes. Warm up, main drill, small-sided game, cool down — structured and timed.</p>
+    </div>
+    <div class="feat-card fade-up" style="transition-delay:0.15s">
+      <div class="feat-icon">👨‍👩‍👧</div>
+      <div class="feat-title">Parent Updates</div>
+      <p class="feat-desc">Share session summaries with parents so they understand what their child is working on and how to support them at home.</p>
+    </div>
+    <div class="feat-card fade-up" style="transition-delay:0.2s">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">EPL Tactics Library</div>
+      <p class="feat-desc">How Liverpool press, how Arsenal build up, how Man City control possession — broken down and adapted for grassroots level.</p>
+      <div class="feat-badge">⭐ EPL Breakdown</div>
+    </div>
+    <div class="feat-card fade-up" style="transition-delay:0.25s">
+      <div class="feat-icon">💾</div>
+      <div class="feat-title">Save & Share</div>
+      <p class="feat-desc">Build your own drill library. Save favourite sessions, reuse them, tweak them, and share with other coaches at your club.</p>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIENCE -->
+
+<div class="audience-section" id="audience">
+  <div class="audience-inner">
+    <div class="audience-header fade-up">
+      <div class="section-tag" style="background:rgba(74,222,128,0.1);color:#4ade80">Who It's For</div>
+      <h2 class="section-h2">Built for everyone in the game</h2>
+      <p class="section-sub">Whether you're on the sideline every Saturday or cheering from the stands — DrillGen has something for you.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('coaches', event)">⚽ Grassroots Coaches</button>
+      <button class="tab-btn" onclick="switchTab('parents', event)">👨‍👩‍👧 Parents</button>
+      <button class="tab-btn" onclick="switchTab('fans', event)">📊 Tactics Fans</button>
+    </div>
+
+```
+<div class="tab-content active" id="tab-coaches">
+  <div>
+    <h2 class="section-h2" style="color:white;font-size:30px">Stop spending hours planning. Start coaching.</h2>
+    <ul class="tab-list">
+      <li>Generate a full session plan in under 2 minutes</li>
+      <li>Age-appropriate drills from U6 right through to adults</li>
+      <li>Visual diagrams you can show players on your phone</li>
+      <li>EPL-inspired drills that kids get genuinely excited about</li>
+      <li>Adapt any drill to your squad size and equipment</li>
+    </ul>
+  </div>
+  <div class="tab-visual">
+    <div class="mock-prompt">🔍 "Pressing drills for U12s, 12 players, 8 cones"</div>
+    <div class="mock-result">
+      <div class="mock-result-title">⚡ 5 drills generated instantly</div>
+      <div class="mock-tags">
+        <span class="mock-tag">📋 Full instructions</span>
+        <span class="mock-tag">🎨 Pitch diagram</span>
+        <span class="mock-tag">⏱ Timed steps</span>
+        <span class="mock-tag">💡 Coach tips</span>
+      </div>
+    </div>
+    <div class="mock-result">
+      <div class="mock-result-title">🔴 Liverpool High Press Drill</div>
+      <div style="font-size:13px;color:#64748b;margin-top:6px;line-height:1.6">Trigger press from the front, win ball high, create chance... <span style="color:#4ade80;cursor:pointer">View drill →</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-parents">
+  <div>
+    <h2 class="section-h2" style="color:white;font-size:30px">Stay connected to your child's football journey.</h2>
+    <ul class="tab-list">
+      <li>See exactly what drills your child is working on each week</li>
+      <li>Simple explanations — zero coaching jargon</li>
+      <li>Tips on how to practise in the backyard or local park</li>
+      <li>Understand the skills your child is developing</li>
+      <li>Get session summaries directly from the coach</li>
+    </ul>
+  </div>
+  <div class="tab-visual">
+    <div class="mock-prompt">📬 Session summary from Coach</div>
+    <div class="mock-result">
+      <div class="mock-result-title">Tonight we worked on: Shooting</div>
+      <div style="font-size:13px;color:#64748b;margin-top:6px;line-height:1.6">Your child practised diagonal runs and first-time finishing. To help at home: kick-ups against a wall or take turns shooting at a garden goal.</div>
+    </div>
+    <div style="background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.14);border-radius:10px;padding:12px;font-size:13px;color:#4ade80">
+      ✓ Your child attended 8 of the last 10 sessions
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-fans">
+  <div>
+    <h2 class="section-h2" style="color:white;font-size:30px">Understand the game at a deeper level.</h2>
+    <ul class="tab-list">
+      <li>Tactical breakdowns of every EPL team and manager</li>
+      <li>How does Slot's Liverpool press work? We show you</li>
+      <li>Weekly tactics explainers tied to real EPL matches</li>
+      <li>Formation guides — 4-3-3, 4-2-3-1, 3-4-3 and more</li>
+      <li>Learn the language coaches use on the training ground</li>
+    </ul>
+  </div>
+  <div class="tab-visual">
+    <div class="mock-prompt">📊 "How does Arsenal's build-up play work?"</div>
+    <div class="mock-result">
+      <div class="mock-result-title">🔴 Arsenal 4-3-3 Build-Up Breakdown</div>
+      <div class="mock-tags" style="margin-top:8px">
+        <span class="mock-tag">Positional play</span>
+        <span class="mock-tag">Half-spaces</span>
+        <span class="mock-tag">Press triggers</span>
+        <span class="mock-tag">Width & depth</span>
+      </div>
+    </div>
+    <div class="mock-result">
+      <div style="font-size:13px;color:#64748b;line-height:1.6">Arteta's side draw opponents out with short passing before playing quickly into the half-spaces... <span style="color:#4ade80;cursor:pointer">Read full breakdown →</span></div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- PRICING -->
+
+<div class="pricing-section" id="pricing">
+  <div class="fade-up" style="text-align:center">
+    <div class="section-tag">Pricing</div>
+    <h2 class="section-h2">Simple, honest pricing</h2>
+    <p class="section-sub" style="margin:0 auto">No hidden fees. Start free, upgrade when ready. Cancel any time.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card fade-up">
+      <div class="plan-name">Free</div>
+      <div class="plan-price"><sup>$</sup>0</div>
+      <div class="plan-per">forever free</div>
+      <ul class="plan-feats">
+        <li>5 drill generations per month</li>
+        <li>Basic drill library access</li>
+        <li>Visual pitch diagrams</li>
+        <li>1 saved session</li>
+      </ul>
+      <button class="btn-plan btn-outline">Get Started</button>
+    </div>
+    <div class="price-card featured fade-up" style="transition-delay:0.1s">
+      <div class="popular-badge">⭐ Most Popular</div>
+      <div class="plan-name">Pro Coach</div>
+      <div class="plan-price"><sup>$</sup>12</div>
+      <div class="plan-per">per month</div>
+      <ul class="plan-feats">
+        <li>Unlimited drill generations</li>
+        <li>Full EPL tactics library</li>
+        <li>Animated pitch diagrams</li>
+        <li>Session planner & timer</li>
+        <li>Parent sharing feature</li>
+        <li>Unlimited saved sessions</li>
+      </ul>
+      <button class="btn-plan btn-solid">Start Free Trial</button>
+    </div>
+    <div class="price-card fade-up" style="transition-delay:0.2s">
+      <div class="plan-name">Club</div>
+      <div class="plan-price"><sup>$</sup>59</div>
+      <div class="plan-per">per month</div>
+      <ul class="plan-feats">
+        <li>Everything in Pro</li>
+        <li>Up to 10 coaches</li>
+        <li>Shared club drill library</li>
+        <li>Club branding on sessions</li>
+        <li>Priority support</li>
+        <li>Monthly coaching webinar</li>
+      </ul>
+      <button class="btn-plan btn-outline">Contact Us</button>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+
+<div class="testi-section">
+  <div class="testi-inner">
+    <div style="text-align:center" class="fade-up">
+      <div class="section-tag">Coaches Love It</div>
+      <h2 class="section-h2">What coaches are saying</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card fade-up">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"I used to spend 2 hours every week planning sessions. DrillGen does it in 5 minutes. My U10s are excited to train because the drills reference their favourite EPL players."</p>
+        <div class="testi-author">
+          <div class="author-av" style="background:#16a34a">M</div>
+          <div>
+            <div class="author-name">Mike T.</div>
+            <div class="author-role">U10 Grassroots Coach · Sydney</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fade-up" style="transition-delay:0.1s">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"As a parent I finally understand what my son is working on each week. The session summaries are brilliant — simple, clear, and actually useful."</p>
+        <div class="testi-author">
+          <div class="author-av" style="background:#2563eb">S</div>
+          <div>
+            <div class="author-name">Sarah L.</div>
+            <div class="author-role">Football Parent · Melbourne</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fade-up" style="transition-delay:0.2s">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"The EPL tactics breakdowns are incredible. I watch every game but never fully understood the structure. DrillGen changed that completely."</p>
+        <div class="testi-author">
+          <div class="author-av" style="background:#dc2626">J</div>
+          <div>
+            <div class="author-name">James R.</div>
+            <div class="author-role">EPL Fan & Weekend Player · Brisbane</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+
+<div class="cta-section">
+  <h2>Ready to coach smarter with DrillGen?</h2>
+  <p>Join thousands of grassroots coaches already generating better sessions. Free to start.</p>
+  <button class="btn-white">Start Your Free Trial →</button>
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+  <div class="footer-logo">
+    <div class="logo-icon">⚽</div>
+    Drill<span class="footer-logo-gen">Gen</span>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#">Features</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">For Clubs</a></li>
+    <li><a href="#">EPL Tactics</a></li>
+    <li><a href="#">Blog</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 DrillGen. All rights reserved.</div>
+</footer>
+
+<script>
+  function switchTab(tab, e) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    e.target.classList.add('active');
+  }
+
+  function setQuery(text) {
+    document.getElementById('heroInput').value = text;
+    document.getElementById('heroInput').focus();
+  }
+
+  function handleSearch() {
+    const val = document.getElementById('heroInput').value.trim();
+    if (!val) return;
+    alert('🚀 In the live app, this instantly generates your drills!\n\nQuery: "' + val + '"');
+  }
+
+  document.getElementById('heroInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSearch();
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
