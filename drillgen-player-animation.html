@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrillGen — Animated Player Drill</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0f0a;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px 16px;
+    color: white;
+  }
+
+.header {
+text-align: center;
+margin-bottom: 24px;
+}
+
+.brand {
+font-size: 11px;
+letter-spacing: 4px;
+color: #4ade80;
+font-weight: 700;
+margin-bottom: 6px;
+}
+
+h1 {
+font-family: ‘Syne’, sans-serif;
+font-size: 26px;
+font-weight: 800;
+color: white;
+margin-bottom: 4px;
+}
+
+.sub { font-size: 13px; color: #64748b; }
+
+.card {
+background: #111811;
+border: 1px solid #1f3a1f;
+border-radius: 20px;
+overflow: hidden;
+width: 100%;
+max-width: 860px;
+box-shadow: 0 0 60px rgba(74,222,128,0.06);
+}
+
+.card-header {
+padding: 18px 24px;
+border-bottom: 1px solid #1a2e1a;
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 10px;
+}
+
+.drill-name {
+font-family: ‘Syne’, sans-serif;
+font-size: 18px;
+font-weight: 800;
+}
+
+.drill-epl {
+font-size: 11px;
+color: #4ade80;
+font-weight: 600;
+letter-spacing: 1px;
+margin-bottom: 3px;
+}
+
+.badges { display: flex; gap: 7px; flex-wrap: wrap; }
+
+.badge {
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.08);
+color: #94a3b8;
+padding: 4px 10px;
+border-radius: 7px;
+font-size: 11px;
+}
+
+canvas {
+display: block;
+width: 100%;
+background: #1a3a1a;
+}
+
+.controls {
+padding: 16px 24px;
+display: flex;
+align-items: center;
+gap: 12px;
+flex-wrap: wrap;
+border-top: 1px solid #1a2e1a;
+}
+
+.play-btn {
+padding: 10px 24px;
+background: #16a34a;
+color: white;
+border: none;
+border-radius: 10px;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+box-shadow: 0 3px 12px rgba(22,163,74,0.35);
+display: flex;
+align-items: center;
+gap: 7px;
+}
+
+.play-btn:hover { background: #15803d; transform: translateY(-1px); }
+
+.speed-btn {
+padding: 9px 16px;
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.1);
+color: #94a3b8;
+border-radius: 9px;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+font-family: ‘Outfit’, sans-serif;
+transition: all 0.2s;
+}
+
+.speed-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+.speed-btn.active { border-color: #4ade80; color: #4ade80; background: rgba(74,222,128,0.08); }
+
+.step-box {
+flex: 1;
+min-width: 200px;
+background: rgba(22,163,74,0.07);
+border: 1px solid rgba(22,163,74,0.15);
+border-radius: 10px;
+padding: 10px 14px;
+font-size: 13px;
+color: #94a3b8;
+line-height: 1.5;
+}
+
+.step-box strong { color: #4ade80; }
+
+.progress-wrap {
+width: 100%;
+height: 4px;
+background: rgba(255,255,255,0.06);
+border-radius: 2px;
+overflow: hidden;
+}
+
+.progress-bar {
+height: 100%;
+background: linear-gradient(90deg, #16a34a, #4ade80);
+border-radius: 2px;
+transition: width 0.1s linear;
+width: 0%;
+}
+
+.legend {
+padding: 12px 24px 18px;
+display: flex;
+gap: 16px;
+flex-wrap: wrap;
+}
+
+.leg { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #64748b; }
+
+.leg-circle {
+width: 14px; height: 14px;
+border-radius: 50%;
+border: 2px solid;
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">⚽ DRILLGEN — PLAYER ANIMATION</div>
+  <h1>De Bruyne's Switch & Strike</h1>
+  <div class="sub">Animated player avatars — see the drill come to life</div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="drill-epl">⭐ EPL-Inspired — Kevin De Bruyne · Man City</div>
+      <div class="drill-name">Switch Pass → Cutback → First Time Finish</div>
+    </div>
+    <div class="badges">
+      <span class="badge">⏱ 20–25 mins</span>
+      <span class="badge">👥 12 players</span>
+      <span class="badge">🎯 U14+</span>
+    </div>
+  </div>
+
+<canvas id="pitch" width="860" height="480"></canvas>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="controls">
+    <button class="play-btn" id="playBtn" onclick="togglePlay()">
+      <span id="playIcon">▶</span> <span id="playLabel">Play Drill</span>
+    </button>
+    <button class="speed-btn active" id="s1x" onclick="setSpeed(1)">1x</button>
+    <button class="speed-btn" id="s15x" onclick="setSpeed(1.5)">1.5x</button>
+    <button class="speed-btn" id="s2x" onclick="setSpeed(2)">2x</button>
+    <div class="step-box" id="stepBox">
+      <strong>Ready</strong> — Press Play to watch the drill. Players will move through each phase with real-time coaching cues.
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-circle" style="background:#1e3a5f;border-color:#60a5fa"></div> Passer (P)</div>
+    <div class="leg"><div class="leg-circle" style="background:#14532d;border-color:#4ade80"></div> Wide Receiver (W)</div>
+    <div class="leg"><div class="leg-circle" style="background:#92400e;border-color:#fbbf24"></div> Shooter (S)</div>
+    <div class="leg"><div class="leg-circle" style="background:#1a1a3a;border-color:#a78bfa"></div> Goalkeeper (GK)</div>
+    <div class="leg"><div class="leg-circle" style="background:#7f1d1d;border-color:#f87171"></div> Defender (DEF)</div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('pitch');
+const ctx = canvas.getContext('2d');
+
+// ── SCALE ──────────────────────────────────────────
+const W = 860, H = 480;
+canvas.width = W; canvas.height = H;
+
+// ── STATE ──────────────────────────────────────────
+let playing = false;
+let t = 0; // 0..1 animation progress
+let speed = 1;
+let animId = null;
+let lastTime = null;
+const DURATION = 6000; // ms for full animation
+
+// ── HELPERS ──────────────────────────────────────────
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function easeInOut(t) {
+  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
+
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
+// Get eased position between keyframes
+function getPos(keyframes, t) {
+  // keyframes: [{t, x, y}, ...]
+  if (t <= keyframes[0].t) return { x: keyframes[0].x, y: keyframes[0].y };
+  if (t >= keyframes[keyframes.length - 1].t) {
+    const last = keyframes[keyframes.length - 1];
+    return { x: last.x, y: last.y };
+  }
+  for (let i = 0; i < keyframes.length - 1; i++) {
+    const a = keyframes[i], b = keyframes[i + 1];
+    if (t >= a.t && t <= b.t) {
+      const lt = (t - a.t) / (b.t - a.t);
+      const et = easeInOut(lt);
+      return { x: lerp(a.x, b.x, et), y: lerp(a.y, b.y, et) };
+    }
+  }
+}
+
+// ── DRAW PITCH ──────────────────────────────────────────
+function drawPitch() {
+  // Grass stripes
+  for (let i = 0; i < W / 40; i++) {
+    ctx.fillStyle = i % 2 === 0 ? '#183d1e' : '#163a1c';
+    ctx.fillRect(i * 40, 0, 40, H);
+  }
+
+  // Pitch border
+  ctx.strokeStyle = '#2d5a33';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(20, 20, W - 40, H - 40);
+
+  // Halfway line
+  ctx.setLineDash([8, 5]);
+  ctx.strokeStyle = '#2d5a33';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(W / 2, 20); ctx.lineTo(W / 2, H - 20); ctx.stroke();
+
+  // Centre circle
+  ctx.beginPath();
+  ctx.arc(W / 2, H / 2, 55, 0, Math.PI * 2);
+  ctx.strokeStyle = '#2d5a33';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Left penalty box
+  ctx.strokeStyle = '#2d5a33';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(20, H / 2 - 90, 120, 180);
+  ctx.strokeRect(20, H / 2 - 50, 40, 100);
+
+  // Right penalty box
+  ctx.strokeRect(W - 140, H / 2 - 90, 120, 180);
+  ctx.strokeRect(W - 60, H / 2 - 50, 40, 100);
+
+  // Penalty spots
+  ctx.fillStyle = '#2d5a33';
+  ctx.beginPath(); ctx.arc(110, H / 2, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W - 110, H / 2, 3, 0, Math.PI * 2); ctx.fill();
+
+  // Left goal
+  ctx.strokeStyle = '#4ade80';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(4, H / 2 - 44, 18, 88);
+
+  // Right goal (TARGET)
+  ctx.strokeStyle = '#4ade80';
+  ctx.lineWidth = 3;
+  ctx.shadowColor = '#4ade80';
+  ctx.shadowBlur = 10;
+  ctx.strokeRect(W - 22, H / 2 - 44, 18, 88);
+  ctx.shadowBlur = 0;
+
+  // Goal net lines right
+  ctx.strokeStyle = 'rgba(74,222,128,0.25)';
+  ctx.lineWidth = 0.5;
+  for (let i = 1; i < 5; i++) {
+    const ny = H / 2 - 44 + i * (88 / 5);
+    ctx.beginPath(); ctx.moveTo(W - 22, ny); ctx.lineTo(W - 4, ny); ctx.stroke();
+  }
+  ctx.beginPath(); ctx.moveTo(W - 14, H / 2 - 44); ctx.lineTo(W - 14, H / 2 + 44); ctx.stroke();
+
+  // Cone markers (diagonal channel)
+  drawCone(680, 380);
+  drawCone(650, 320);
+  drawCone(640, 260);
+  drawCone(700, 140);
+  drawCone(730, 100);
+
+  // Zone label
+  ctx.font = '600 11px Outfit';
+  ctx.fillStyle = 'rgba(249,115,22,0.7)';
+  ctx.fillText('Diagonal Channel', 630, 420);
+}
+
+function drawCone(x, y) {
+  ctx.fillStyle = '#f97316';
+  ctx.beginPath();
+  ctx.moveTo(x, y - 8);
+  ctx.lineTo(x + 6, y + 5);
+  ctx.lineTo(x - 6, y + 5);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// ── DRAW PLAYER ──────────────────────────────────────────
+function drawPlayer(x, y, opts) {
+  const {
+    color = '#1e3a5f',
+    border = '#60a5fa',
+    label = 'P',
+    size = 18,
+    shadow = false
+  } = opts;
+
+  if (shadow) {
+    ctx.shadowColor = border;
+    ctx.shadowBlur = 12;
+  }
+
+  // Body
+  ctx.beginPath();
+  ctx.arc(x, y, size, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = border;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Running shadow under feet
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(x + 2, y + size - 2, size * 0.6, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Jersey number/label
+  ctx.font = `700 ${label.length > 1 ? 10 : 12}px Outfit`;
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, x, y + 1);
+  ctx.textBaseline = 'alphabetic';
+}
+
+// ── DRAW BALL ──────────────────────────────────────────
+function drawBall(x, y, opacity = 1) {
+  ctx.globalAlpha = opacity;
+  ctx.shadowColor = 'rgba(255,255,255,0.5)';
+  ctx.shadowBlur = 8;
+
+  ctx.beginPath();
+  ctx.arc(x, y, 8, 0, Math.PI * 2);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  ctx.strokeStyle = '#d1d5db';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Pentagon pattern
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 0.8;
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(angle) * 5, y + Math.sin(angle) * 5);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ── DRAW TRAIL ──────────────────────────────────────────
+function drawTrail(points, color, dash = false) {
+  if (points.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i].x, points[i].y);
+  }
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  if (dash) ctx.setLineDash([6, 4]);
+  ctx.globalAlpha = 0.5;
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.globalAlpha = 1;
+}
+
+// ── DRAW ARROW ──────────────────────────────────────────
+function drawArrow(x1, y1, x2, y2, color, width = 2) {
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.stroke();
+
+  // Arrowhead
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - 10 * Math.cos(angle - 0.4), y2 - 10 * Math.sin(angle - 0.4));
+  ctx.lineTo(x2 - 10 * Math.cos(angle + 0.4), y2 - 10 * Math.sin(angle + 0.4));
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+// ── KEYFRAMES ──────────────────────────────────────────
+// Passer
+const passerKF = [
+  { t: 0, x: 280, y: 320 },
+  { t: 0.15, x: 280, y: 310 }, // steps forward to pass
+  { t: 0.35, x: 280, y: 310 },
+  { t: 1, x: 280, y: 310 }
+];
+
+// Wide Receiver
+const wideKF = [
+  { t: 0, x: 700, y: 360 },
+  { t: 0.1, x: 690, y: 340 },
+  { t: 0.3, x: 670, y: 170 }, // runs to receive
+  { t: 0.45, x: 655, y: 165 },
+  { t: 0.65, x: 620, y: 230 }, // cuts inside
+  { t: 0.85, x: 600, y: 240 },
+  { t: 1, x: 600, y: 240 }
+];
+
+// Shooter
+const shooterKF = [
+  { t: 0, x: 500, y: 370 },
+  { t: 0.25, x: 500, y: 360 },
+  { t: 0.5, x: 530, y: 290 }, // starts run
+  { t: 0.7, x: 620, y: 235 }, // arrives in box
+  { t: 0.85, x: 650, y: 225 },
+  { t: 1, x: 670, y: 220 }
+];
+
+// Ball
+const ballKF = [
+  { t: 0, x: 280, y: 310 },
+  { t: 0.18, x: 280, y: 310 },   // sits at passer
+  { t: 0.38, x: 655, y: 165 },   // switch pass to wide
+  { t: 0.52, x: 655, y: 165 },   // wide receives
+  { t: 0.65, x: 640, y: 235 },   // cutback
+  { t: 0.72, x: 640, y: 235 },   // shooter receives
+  { t: 0.88, x: W - 22, y: H / 2 + 15 }, // SHOT to goal
+  { t: 1, x: W - 22, y: H / 2 + 15 }
+];
+
+// GK
+const gkKF = [
+  { t: 0, x: W - 35, y: H / 2 },
+  { t: 0.75, x: W - 35, y: H / 2 },
+  { t: 0.9, x: W - 30, y: H / 2 + 30 }, // dives but too late
+  { t: 1, x: W - 30, y: H / 2 + 35 }
+];
+
+// Defender
+const defKF = [
+  { t: 0, x: 650, y: 200 },
+  { t: 0.55, x: 650, y: 200 },
+  { t: 0.75, x: 630, y: 215 }, // tries to close
+  { t: 1, x: 625, y: 218 }
+];
+
+// ── STEP MESSAGES ──────────────────────────────────────────
+const steps = [
+  { from: 0, to: 0.2, msg: '<strong>Step 1 — Receive & Switch:</strong> The passer receives the ball centrally and spots the wide receiver making a diagonal run. He plays the De Bruyne switch — long, disguised, perfectly weighted.' },
+  { from: 0.2, to: 0.45, msg: '<strong>Step 2 — The Switch Pass:</strong> Ball travels diagonally across the pitch to the wide receiver. Watch the wide player\'s run — timing and angle are everything. Check shoulder before the ball arrives.' },
+  { from: 0.45, to: 0.65, msg: '<strong>Step 3 — Control & Cut Inside:</strong> Wide receiver takes one touch to control, opens body, cuts inside onto the strong foot. The shooter is already making the run into the box.' },
+  { from: 0.65, to: 0.78, msg: '<strong>Step 4 — The Cutback:</strong> Wide receiver plays a low cutback across the box. The shooter times the run perfectly — arriving late so the defender can\'t track them.' },
+  { from: 0.78, to: 1, msg: '<strong>Step 5 — First Time Finish! 🎯</strong> Shooter arrives on time and strikes first time — far post, low and across the goalkeeper. No extra touches. The GK dives but can\'t get there. GOAL!' }
+];
+
+function getStep(t) {
+  for (const s of steps) {
+    if (t >= s.from && t <= s.to) return s.msg;
+  }
+  return steps[steps.length - 1].msg;
+}
+
+// ── GOAL CELEBRATION ──────────────────────────────────────────
+function drawGoalCelebration(t) {
+  if (t < 0.85) return;
+  const alpha = clamp((t - 0.85) / 0.08, 0, 1);
+  ctx.globalAlpha = alpha;
+  ctx.font = '800 28px Syne';
+  ctx.fillStyle = '#4ade80';
+  ctx.shadowColor = '#4ade80';
+  ctx.shadowBlur = 20;
+  ctx.textAlign = 'center';
+  ctx.fillText('GOAL! ⚽', W / 2, 80);
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+}
+
+// ── DRAW PASS TRAILS ──────────────────────────────────────────
+function drawPassTrails(t) {
+  // Switch pass trail
+  if (t >= 0.18 && t <= 0.45) {
+    const progress = clamp((t - 0.18) / 0.2, 0, 1);
+    const bPos = getPos(ballKF, t);
+    const startPos = { x: 280, y: 310 };
+    ctx.beginPath();
+    ctx.moveTo(startPos.x, startPos.y);
+    ctx.lineTo(bPos.x, bPos.y);
+    ctx.strokeStyle = '#60a5fa';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.globalAlpha = 0.6 * (1 - progress * 0.5);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+  }
+
+  // Shot trail
+  if (t >= 0.72 && t <= 0.95) {
+    const bPos = getPos(ballKF, t);
+    ctx.beginPath();
+    ctx.moveTo(640, 235);
+    ctx.lineTo(bPos.x, bPos.y);
+    ctx.strokeStyle = '#4ade80';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#4ade80';
+    ctx.shadowBlur = 8;
+    ctx.globalAlpha = 0.8;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+  }
+}
+
+// ── DRAW FRAME ──────────────────────────────────────────
+function drawFrame(progress) {
+  ctx.clearRect(0, 0, W, H);
+  drawPitch();
+
+  // Get positions
+  const pPos = getPos(passerKF, progress);
+  const wPos = getPos(wideKF, progress);
+  const sPos = getPos(shooterKF, progress);
+  const bPos = getPos(ballKF, progress);
+  const gkPos = getPos(gkKF, progress);
+  const defPos = getPos(defKF, progress);
+
+  // Draw trails
+  drawPassTrails(progress);
+
+  // Waiting players (static background lines)
+  // Passer waiting
+  drawPlayer(255, 350, { color: '#152a47', border: '#3b82f6', label: 'P', size: 14 });
+  // Wide waiting
+  drawPlayer(720, 380, { color: '#122610', border: '#22c55e', label: 'W', size: 14 });
+  // Shooter waiting
+  drawPlayer(470, 390, { color: '#2d1a00', border: '#f59e0b', label: 'S', size: 14 });
+
+  // Active GK
+  drawPlayer(gkPos.x, gkPos.y, { color: '#1a1a3a', border: '#a78bfa', label: 'GK', size: 17 });
+
+  // Active defender
+  drawPlayer(defPos.x, defPos.y, { color: '#7f1d1d', border: '#f87171', label: 'DEF', size: 15 });
+
+  // Active shooter
+  drawPlayer(sPos.x, sPos.y, {
+    color: '#92400e',
+    border: '#fbbf24',
+    label: 'S',
+    size: 18,
+    shadow: progress > 0.6
+  });
+
+  // Active wide receiver
+  drawPlayer(wPos.x, wPos.y, {
+    color: '#14532d',
+    border: '#4ade80',
+    label: 'W',
+    size: 18,
+    shadow: progress > 0.3 && progress < 0.7
+  });
+
+  // Active passer
+  drawPlayer(pPos.x, pPos.y, {
+    color: '#1e3a5f',
+    border: '#60a5fa',
+    label: 'P',
+    size: 18,
+    shadow: progress < 0.25
+  });
+
+  // Ball
+  const ballOpacity = progress > 0.9 ? clamp(1 - (progress - 0.9) / 0.05, 0.5, 1) : 1;
+  drawBall(bPos.x, bPos.y, ballOpacity);
+
+  // Goal celebration
+  drawGoalCelebration(progress);
+
+  // Step labels on pitch
+  if (progress < 0.2) {
+    ctx.font = '600 12px Outfit';
+    ctx.fillStyle = '#60a5fa';
+    ctx.textAlign = 'center';
+    ctx.fillText('Check shoulder!', pPos.x, pPos.y - 28);
+  }
+
+  if (progress > 0.28 && progress < 0.5) {
+    ctx.font = '600 12px Outfit';
+    ctx.fillStyle = '#4ade80';
+    ctx.textAlign = 'center';
+    ctx.fillText('Run! Timing is key', wPos.x, wPos.y - 28);
+  }
+
+  if (progress > 0.6 && progress < 0.78) {
+    ctx.font = '600 12px Outfit';
+    ctx.fillStyle = '#fbbf24';
+    ctx.textAlign = 'center';
+    ctx.fillText('Arrive LATE!', sPos.x, sPos.y - 28);
+  }
+
+  if (progress > 0.77 && progress < 0.9) {
+    ctx.font = '700 13px Outfit';
+    ctx.fillStyle = '#4ade80';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = '#4ade80';
+    ctx.shadowBlur = 8;
+    ctx.fillText('STRIKE! Far post!', sPos.x, sPos.y - 28);
+    ctx.shadowBlur = 0;
+  }
+
+  ctx.textAlign = 'left';
+}
+
+// ── ANIMATION LOOP ──────────────────────────────────────────
+function animate(timestamp) {
+  if (!playing) return;
+  if (!lastTime) lastTime = timestamp;
+
+  const delta = timestamp - lastTime;
+  lastTime = timestamp;
+
+  t = Math.min(t + (delta / DURATION) * speed, 1);
+
+  drawFrame(t);
+
+  // Update progress bar
+  document.getElementById('progressBar').style.width = (t * 100) + '%';
+
+  // Update step description
+  document.getElementById('stepBox').innerHTML = getStep(t);
+
+  if (t >= 1) {
+    playing = false;
+    document.getElementById('playIcon').textContent = '↺';
+    document.getElementById('playLabel').textContent = 'Replay';
+    lastTime = null;
+    return;
+  }
+
+  animId = requestAnimationFrame(animate);
+}
+
+// ── CONTROLS ──────────────────────────────────────────
+function togglePlay() {
+  if (t >= 1) {
+    t = 0;
+    document.getElementById('progressBar').style.width = '0%';
+  }
+
+  playing = !playing;
+
+  if (playing) {
+    document.getElementById('playIcon').textContent = '⏸';
+    document.getElementById('playLabel').textContent = 'Pause';
+    lastTime = null;
+    animId = requestAnimationFrame(animate);
+  } else {
+    document.getElementById('playIcon').textContent = '▶';
+    document.getElementById('playLabel').textContent = 'Play Drill';
+    if (animId) cancelAnimationFrame(animId);
+  }
+}
+
+function setSpeed(s) {
+  speed = s;
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('s' + (s === 1.5 ? '15' : s) + 'x').classList.add('active');
+}
+
+// Initial frame
+drawFrame(0);
+</script>
+
+</body>
+</html>
