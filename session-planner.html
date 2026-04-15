@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrillGen — Session Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #16a34a;
+  --green-light: #4ade80;
+  --green-pale: #f0fdf4;
+  --green-dark: #14532d;
+  --pitch: #0c1a0e;
+  --deep: #1e3a22;
+  --white: #ffffff;
+  --off: #f8faf8;
+  --slate: #0f172a;
+  --mid: #334155;
+  --light: #64748b;
+  --border: #e2e8f0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--off); color: var(--slate); min-height: 100vh; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 66px; background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 5%; justify-content: space-between;
+}
+.logo { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.logo-wordmark { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; display: flex; flex-direction: column; line-height: 1; }
+.logo-drill { color: #0f172a; }
+.logo-gen { color: #16a34a; }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.btn-text { background: none; border: none; font-size: 14px; font-weight: 600; color: #334155; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 8px 14px; border-radius: 8px; text-decoration: none; display: inline-block; }
+.btn-nav-cta { background: #16a34a; color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; padding: 10px 22px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.btn-nav-cta:hover { background: #15803d; }
+
+/* LAYOUT */
+.page { padding-top: 66px; max-width: 960px; margin: 0 auto; padding-left: 5%; padding-right: 5%; padding-bottom: 80px; }
+
+.page-header { padding: 48px 0 32px; text-align: center; }
+.page-tag { display: inline-block; background: var(--green-pale); color: var(--green-dark); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; margin-bottom: 14px; }
+.page-h1 { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--slate); margin-bottom: 10px; line-height: 1.1; }
+.page-h1 em { font-style: normal; color: var(--green); }
+.page-sub { font-size: 16px; color: var(--light); line-height: 1.7; max-width: 560px; margin: 0 auto; }
+
+/* BUILDER CARD */
+.builder-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+}
+
+.builder-section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--slate);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* FIELDS GRID */
+.fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.field-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 7px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--slate);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field-input:focus { border-color: var(--green); }
+
+.field-select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--slate);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.field-select:focus { border-color: var(--green); }
+
+/* DURATION SLIDER */
+.duration-wrap { margin-bottom: 20px; }
+
+.duration-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.duration-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.duration-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.duration-value span { font-size: 13px; color: var(--light); font-family: 'DM Sans', sans-serif; font-weight: 500; }
+
+.duration-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.duration-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(22,163,74,0.4);
+}
+
+.duration-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: pointer;
+  border: none;
+}
+
+.duration-marks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.duration-mark {
+  font-size: 11px;
+  color: var(--light);
+}
+
+/* PHASES TOGGLE */
+.phases-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.phase-toggle {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+}
+
+.phase-toggle:hover { border-color: var(--green-light); }
+
+.phase-toggle.active {
+  border-color: var(--green);
+  background: var(--green-pale);
+}
+
+.phase-toggle-check {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: transparent;
+  transition: all 0.2s;
+}
+
+.phase-toggle.active .phase-toggle-check {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.phase-toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mid);
+}
+
+.phase-toggle.active .phase-toggle-label { color: var(--green-dark); }
+
+.phase-toggle-icon { font-size: 16px; }
+
+/* FOCUS TEXTAREA */
+.focus-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--off);
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--slate);
+  resize: none;
+  min-height: 70px;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.focus-textarea:focus { border-color: var(--green); background: white; }
+.focus-textarea::placeholder { color: #94a3b8; }
+
+/* GENERATE BTN */
+.gen-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.gen-btn:hover:not(:disabled) { background: #15803d; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,0.4); }
+.gen-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ERROR */
+.error-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px 20px; color: #dc2626; font-size: 14px; display: none; margin-top: 12px; line-height: 1.6; }
+
+/* LOADING */
+.loading-state { text-align: center; padding: 60px 20px; display: none; }
+.loading-ball { font-size: 48px; animation: bounce 0.7s ease-in-out infinite alternate; display: block; margin-bottom: 16px; }
+@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-16px); } }
+.loading-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--slate); margin-bottom: 6px; }
+.loading-sub { font-size: 13px; color: var(--light); }
+
+/* SESSION OUTPUT */
+.session-output { display: none; }
+
+.session-header-card {
+  background: var(--pitch);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.session-header-card::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(22,163,74,0.15) 0%, transparent 70%);
+}
+
+.session-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.session-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+}
+
+.badge-green { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
+.badge-blue { background: rgba(96,165,250,0.15); color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
+.badge-yellow { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+
+.session-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 800;
+  color: white;
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+
+.session-title em { font-style: normal; color: #4ade80; }
+
+.session-overview {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.7;
+  max-width: 600px;
+  margin-bottom: 24px;
+}
+
+.session-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.session-stat {
+  border-left: 2px solid rgba(74,222,128,0.3);
+  padding-left: 14px;
+}
+
+.session-stat-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: white; }
+.session-stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+/* PHASE CARDS */
+.phases-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+
+.phase-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.phase-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); }
+
+.phase-card-header {
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+}
+
+.phase-color-bar {
+  width: 4px;
+  height: 44px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.phase-header-info { flex: 1; }
+
+.phase-header-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--slate);
+  margin-bottom: 4px;
+}
+
+.phase-header-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--light);
+}
+
+.phase-header-duration {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--slate);
+  flex-shrink: 0;
+}
+
+.phase-expand { color: var(--light); font-size: 16px; transition: transform 0.3s; flex-shrink: 0; }
+.phase-card.expanded .phase-expand { transform: rotate(180deg); }
+
+.phase-card-body {
+  display: none;
+  padding: 0 22px 22px;
+  border-top: 1px solid var(--border);
+}
+
+.phase-card.expanded .phase-card-body { display: block; }
+
+.phase-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--light);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 16px 0 8px;
+}
+
+.phase-description {
+  font-size: 14px;
+  color: var(--mid);
+  line-height: 1.7;
+}
+
+.phase-drill-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--slate);
+  margin-bottom: 8px;
+}
+
+.phase-epl-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.instructions-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 14px;
+  color: var(--mid);
+  line-height: 1.6;
+}
+
+.step-num {
+  width: 22px; height: 22px;
+  background: var(--green);
+  color: white;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.coaching-points {
+  background: var(--green-pale);
+  border: 1px solid rgba(22,163,74,0.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.coaching-points ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.coaching-points li { font-size: 13px; color: var(--green-dark); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+.coaching-points li::before { content: '✓'; font-weight: 700; color: var(--green); flex-shrink: 0; }
+
+/* TIMELINE */
+.timeline-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.timeline-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--slate);
+  margin-bottom: 18px;
+}
+
+.timeline-bar {
+  display: flex;
+  height: 44px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  gap: 2px;
+}
+
+.timeline-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  border-radius: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0 8px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.timeline-segment:hover { opacity: 0.85; transform: scaleY(1.05); }
+
+.timeline-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--mid);
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* SESSION ACTIONS */
+.session-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.action-btn {
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  text-align: center;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-green { background: var(--green); color: white; box-shadow: 0 3px 12px rgba(22,163,74,0.3); }
+.action-green:hover { background: #15803d; transform: translateY(-1px); }
+.action-outline { background: none; border: 1.5px solid var(--border); color: var(--mid); }
+.action-outline:hover { border-color: var(--green); color: var(--green); }
+
+/* API BANNER */
+.api-banner { background: #fffbeb; border: 1px solid rgba(245,158,11,0.3); border-radius: 14px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 14px; }
+.api-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.api-banner-text { flex: 1; }
+.api-banner-title { font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 6px; }
+.api-banner-sub { font-size: 13px; color: #b45309; line-height: 1.5; }
+.api-key-input { width: 100%; margin-top: 10px; padding: 10px 14px; border: 1.5px solid rgba(245,158,11,0.4); border-radius: 10px; background: white; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--slate); outline: none; }
+.api-key-input:focus { border-color: #f59e0b; }
+.api-save-btn { margin-top: 8px; padding: 9px 20px; background: #f59e0b; color: white; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.api-save-btn:hover { background: #d97706; }
+.api-saved { display: none; font-size: 13px; font-weight: 600; color: var(--green); margin-top: 6px; }
+
+/* PHASE COLORS */
+.color-warmup { background: #f59e0b; }
+.color-technical { background: #3b82f6; }
+.color-tactical { background: #ef4444; }
+.color-ssg { background: #8b5cf6; }
+.color-finishing { background: #16a34a; }
+.color-warmdown { background: #06b6d4; }
+
+@media (max-width: 640px) {
+  .fields-grid { grid-template-columns: 1fr; }
+  .phases-grid { grid-template-columns: 1fr 1fr; }
+  .session-actions { grid-template-columns: 1fr; }
+  .session-stats { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <svg width="38" height="32" viewBox="0 0 38 32" fill="none">
+      <rect x="0" y="4" width="26" height="5" rx="2.5" fill="#16a34a"/>
+      <rect x="0" y="13" width="20" height="5" rx="2.5" fill="#16a34a" opacity="0.75"/>
+      <rect x="0" y="22" width="14" height="5" rx="2.5" fill="#16a34a" opacity="0.5"/>
+      <circle cx="32" cy="24" r="6" fill="#0f172a" stroke="#16a34a" stroke-width="1.5"/>
+      <path d="M32 19.5 L33.2 22.5 L32 23.5 L30.8 22.5 Z" fill="#16a34a" opacity="0.7"/>
+      <path d="M28.5 22.5 L30.8 22.5 L30 25 L28 24.5 Z" fill="#16a34a" opacity="0.5"/>
+      <path d="M35.5 22.5 L33.2 22.5 L34 25 L36 24.5 Z" fill="#16a34a" opacity="0.5"/>
+    </svg>
+    <div class="logo-wordmark" style="margin-left:8px">
+      <span class="logo-drill">Drill</span>
+      <span class="logo-gen">Gen</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <a href="drill-generator.html" class="btn-text">Drill Generator</a>
+    <a href="index.html" class="btn-text">← Home</a>
+    <button class="btn-nav-cta" onclick="window.print()">🖨️ Print Session</button>
+    <button class="btn-text" id="logoutBtn" onclick="logout()" style="display:none">Log Out</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-tag">Session Planner</div>
+    <h1 class="page-h1">Build your full session.<br><em>In 60 seconds.</em></h1>
+    <p class="page-sub">Tell DrillGen your session details and it builds a complete structured plan — warm up through to warm down — with EPL-inspired drills for every phase.</p>
+  </div>
+
+  <!-- API KEY BANNER -->
+  <div class="api-banner" id="apiBanner">
+    <div class="api-banner-icon">🔑</div>
+    <div class="api-banner-text">
+      <div class="api-banner-title">Enter your Claude API Key to activate DrillGen</div>
+      <div class="api-banner-sub">Your key is stored only in your browser. Get yours free at console.anthropic.com</div>
+      <input class="api-key-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..."/>
+      <br>
+      <button class="api-save-btn" onclick="saveApiKey()">Save & Activate</button>
+      <div class="api-saved" id="apiSaved">✓ API key saved! You're ready to build sessions.</div>
+    </div>
+  </div>
+
+  <!-- BUILDER CARD -->
+  <div class="builder-card">
+    <div class="builder-section-title">📋 Session Details</div>
+
+    <div class="fields-grid">
+      <div class="field-group">
+        <label>Age Group</label>
+        <select class="field-select" id="ageGroup">
+          <option value="U6-U8">U6 – U8</option>
+          <option value="U9-U11">U9 – U11</option>
+          <option value="U12-U14" selected>U12 – U14</option>
+          <option value="U15-U17">U15 – U17</option>
+          <option value="Adult">Adult / Senior</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Number of Players</label>
+        <select class="field-select" id="playerCount">
+          <option value="6-8">6 – 8 players</option>
+          <option value="8-12" selected>8 – 12 players</option>
+          <option value="12-16">12 – 16 players</option>
+          <option value="16-20">16 – 20 players</option>
+          <option value="20+">20+ players</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Difficulty</label>
+        <select class="field-select" id="difficulty">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate" selected>Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Equipment Available</label>
+        <select class="field-select" id="equipment">
+          <option value="minimal (cones only)">Minimal — cones only</option>
+          <option value="standard (cones, balls, bibs)" selected>Standard — cones, balls, bibs</option>
+          <option value="full (cones, balls, bibs, goals, poles)">Full — goals, poles, all gear</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- DURATION SLIDER -->
+    <div class="duration-wrap">
+      <div class="duration-header">
+        <div class="duration-label">Session Duration</div>
+        <div class="duration-value" id="durationDisplay">60 <span>minutes</span></div>
+      </div>
+      <input type="range" class="duration-slider" id="durationSlider" min="30" max="120" step="5" value="60" oninput="updateDuration(this.value)">
+      <div class="duration-marks">
+        <span class="duration-mark">30 min</span>
+        <span class="duration-mark">60 min</span>
+        <span class="duration-mark">90 min</span>
+        <span class="duration-mark">120 min</span>
+      </div>
+    </div>
+
+    <!-- PHASES -->
+    <div class="builder-section-title" style="margin-top:4px">⚙️ Session Phases</div>
+    <div class="phases-grid" id="phasesGrid">
+      <div class="phase-toggle active" data-phase="Warm Up" onclick="togglePhase(this)">
+        <div class="phase-toggle-check">✓</div>
+        <div class="phase-toggle-icon">🟡</div>
+        <div class="phase-toggle-label">Warm Up</div>
+      </div>
+      <div class="phase-toggle active" data-phase="Technical Drills" onclick="togglePhase(this)">
+        <div class="phase-toggle-check">✓</div>
+        <div class="phase-toggle-icon">🔵</div>
+        <div class="phase-toggle-label">Technical</div>
+      </div>
+      <div class="phase-toggle" data-phase="Tactical Work" onclick="togglePhase(this)">
+        <div class="phase-toggle-check">✓</div>
+        <div class="phase-toggle-icon">🔴</div>
+        <div class="phase-toggle-label">Tactical</div>
+      </div>
+      <div class="phase-toggle active" data-phase="Small Sided Game" onclick="togglePhase(this)">
+        <div class="phase-toggle-check">✓</div>
+        <div class="phase-toggle-icon">🟣</div>
+        <div class="phase-toggle-label">Small Sided Game</div>
+      </div>
+      <div class="phase-toggle" data-phase="Finishing" onclick="togglePhase(this)">
+        <div class="phase-toggle-check">✓</div>
+        <div class="phase-toggle-icon">🟢</div>
+        <div class="phase-toggle-label">Finishing</div>
+      </div>
+      <div class="phase-toggle active" data-phase="Warm Down" onclick="togglePhase(this)">
+        <div class="phase-toggle-check">✓</div>
+        <div class="phase-toggle-icon">🩵</div>
+        <div class="phase-toggle-label">Warm Down</div>
+      </div>
+    </div>
+
+    <!-- SESSION FOCUS -->
+    <div class="builder-section-title">🎯 Session Focus</div>
+    <textarea
+      class="focus-textarea"
+      id="sessionFocus"
+      placeholder="e.g. High pressing and quick transitions inspired by Liverpool. Focus on pressing triggers and winning the ball high..."
+    ></textarea>
+
+    <button class="gen-btn" id="genBtn" onclick="buildSession()">
+      <span class="spinner" id="spinner"></span>
+      <span id="genBtnText">📋 Build Full Session Plan</span>
+    </button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-state" id="loadingState">
+    <span class="loading-ball">📋</span>
+    <div class="loading-text">Building your session plan...</div>
+    <div class="loading-sub">Structuring phases, timing drills, and pulling EPL inspiration</div>
+  </div>
+
+  <!-- SESSION OUTPUT -->
+  <div class="session-output" id="sessionOutput">
+
+    <!-- SESSION HEADER -->
+    <div class="session-header-card" id="sessionHeaderCard">
+      <div class="session-meta-row" id="sessionMetaRow"></div>
+      <div class="session-title" id="sessionTitle"></div>
+      <div class="session-overview" id="sessionOverview"></div>
+      <div class="session-stats" id="sessionStats"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="session-actions">
+      <button class="action-btn action-green" onclick="shareSession()">📤 Share to Players</button>
+      <button class="action-btn action-outline" onclick="window.print()">🖨️ Print Session</button>
+      <button class="action-btn action-outline" onclick="saveSession()">💾 Save Session</button>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline-card" id="timelineCard">
+      <div class="timeline-title">⏱ Session Timeline</div>
+      <div class="timeline-bar" id="timelineBar"></div>
+      <div class="timeline-legend" id="timelineLegend"></div>
+    </div>
+
+    <!-- PHASES LIST -->
+    <div class="phases-list" id="phasesList"></div>
+
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+  const firebaseConfig = {
+    apiKey: "AIzaSyDCEWvKhexYsJQqRKkZgTmedLaAPdrKrgA",
+    authDomain: "drillgen-2f910.firebaseapp.com",
+    projectId: "drillgen-2f910",
+    storageBucket: "drillgen-2f910.firebasestorage.app",
+    messagingSenderId: "406136862852",
+    appId: "1:406136862852:web:95bdb0ef7fcae2f050ead1"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      window.location.href = 'login.html';
+    } else {
+      document.getElementById('logoutBtn').style.display = 'block';
+      document.getElementById('logoutBtn').textContent = `Log Out (${user.displayName || user.email})`;
+    }
+  });
+  window.logout = async function() {
+    await signOut(auth);
+    window.location.href = 'login.html';
+  }
+</script>
+<script>
+let apiKey = '';
+let currentUser = null;
+
+const phaseColors = {
+  'Warm Up': '#f59e0b',
+  'Technical Drills': '#3b82f6',
+  'Tactical Work': '#ef4444',
+  'Small Sided Game': '#8b5cf6',
+  'Finishing': '#16a34a',
+  'Warm Down': '#06b6d4'
+};
+
+const phaseColorClasses = {
+  'Warm Up': 'color-warmup',
+  'Technical Drills': 'color-technical',
+  'Tactical Work': 'color-tactical',
+  'Small Sided Game': 'color-ssg',
+  'Finishing': 'color-finishing',
+  'Warm Down': 'color-warmdown'
+};
+
+function init() {
+  document.getElementById('apiBanner').style.display = 'none';
+}
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key || !key.startsWith('sk-')) {
+    alert('Please enter a valid Claude API key starting with sk-');
+    return;
+  }
+  apiKey = key;
+  localStorage.setItem('drillgen_api_key', key);
+  document.getElementById('apiSaved').style.display = 'block';
+  setTimeout(() => { document.getElementById('apiBanner').style.display = 'none'; }, 1500);
+}
+
+function updateDuration(val) {
+  document.getElementById('durationDisplay').innerHTML = `${val} <span>minutes</span>`;
+}
+
+function togglePhase(el) {
+  el.classList.toggle('active');
+}
+
+function getSelectedPhases() {
+  return Array.from(document.querySelectorAll('.phase-toggle.active')).map(el => el.dataset.phase);
+}
+
+async function buildSession() {
+  if (!apiKey) {
+    // API key is handled server-side via Vercel edge function
+    // No need to show banner
+    return;
+  }
+
+  const phases = getSelectedPhases();
+  if (phases.length < 2) {
+    alert('Please select at least 2 phases for your session.');
+    return;
+  }
+
+  const ageGroup = document.getElementById('ageGroup').value;
+  const playerCount = document.getElementById('playerCount').value;
+  const difficulty = document.getElementById('difficulty').value;
+  const equipment = document.getElementById('equipment').value;
+  const duration = document.getElementById('durationSlider').value;
+  const focus = document.getElementById('sessionFocus').value || 'general football development';
+
+  const btn = document.getElementById('genBtn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('genBtnText');
+  const errorBox = document.getElementById('errorBox');
+
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  btnText.textContent = 'Building session...';
+  errorBox.style.display = 'none';
+  document.getElementById('sessionOutput').style.display = 'none';
+  document.getElementById('loadingState').style.display = 'block';
+
+  const systemPrompt = `You are DrillGen — the world's best football coaching assistant. You build complete, professional football session plans for grassroots coaches. Always use metres (not yards) for all measurements. This platform is used in Australia.
+
+Build a complete ${duration}-minute football session plan with these exact phases: ${phases.join(', ')}.
+
+Session details:
+- Age group: ${ageGroup}
+- Players: ${playerCount}
+- Difficulty: ${difficulty}
+- Equipment: ${equipment}
+- Session focus: ${focus}
+
+IMPORTANT: Respond ONLY with valid JSON. No preamble, no markdown, no backticks. Pure raw JSON only.
+
+The JSON must have exactly this structure:
+{
+  "sessionTitle": "Creative session title referencing EPL theme",
+  "sessionSubtitle": "Brief subtitle",
+  "overview": "2-3 sentence overview of the session theme and objectives",
+  "totalDuration": ${duration},
+  "eplInspiration": "Main EPL team or player this session draws from",
+  "keyObjective": "The single most important thing players will learn",
+  "phases": [
+    {
+      "name": "Phase name exactly as given",
+      "duration": number (minutes),
+      "color": "hex color code",
+      "drillName": "Creative EPL-inspired drill name",
+      "eplReference": "EPL player or team reference",
+      "objective": "What this phase achieves",
+      "description": "2-3 sentence description of the drill",
+      "setup": "How to set up the area",
+      "instructions": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+      "coachingPoints": ["point 1", "point 2", "point 3", "point 4"],
+      "intensity": "Low / Medium / High"
+    }
+  ]
+}
+
+Make sure all phase durations add up to exactly ${duration} minutes. Use EPL references throughout. Make it genuinely useful for a grassroots coach.`;
+
+  try {
+    const response = await fetch('/api/claude', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `Build a ${duration}-minute session for ${ageGroup} focused on: ${focus}` }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'API request failed');
+    }
+
+    const data = await response.json();
+    let text = data.content.map(i => i.text || '').join('');
+    text = text.replace(/```json|```/g, '').trim();
+
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}') + 1;
+    if (start === -1) throw new Error('Could not parse session data. Please try again.');
+
+    const session = JSON.parse(text.slice(start, end));
+    renderSession(session);
+
+  } catch (err) {
+    document.getElementById('loadingState').style.display = 'none';
+    errorBox.textContent = '⚠️ ' + (err.message || 'Something went wrong. Please check your API key and try again.');
+    errorBox.style.display = 'block';
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    btnText.textContent = '📋 Build Full Session Plan';
+    document.getElementById('loadingState').style.display = 'none';
+  }
+}
+
+function renderSession(session) {
+  const output = document.getElementById('sessionOutput');
+
+  // Header
+  document.getElementById('sessionMetaRow').innerHTML = `
+    <span class="session-badge badge-green">⭐ ${session.eplInspiration}</span>
+    <span class="session-badge badge-blue">⏱ ${session.totalDuration} min</span>
+    <span class="session-badge badge-yellow">🎯 ${session.phases.length} phases</span>
+  `;
+
+  document.getElementById('sessionTitle').innerHTML = session.sessionTitle + (session.sessionSubtitle ? `<br><em>${session.sessionSubtitle}</em>` : '');
+  document.getElementById('sessionOverview').textContent = session.overview;
+
+  document.getElementById('sessionStats').innerHTML = `
+    <div class="session-stat">
+      <div class="session-stat-num">${session.totalDuration}</div>
+      <div class="session-stat-label">Total minutes</div>
+    </div>
+    <div class="session-stat">
+      <div class="session-stat-num">${session.phases.length}</div>
+      <div class="session-stat-label">Phases</div>
+    </div>
+    <div class="session-stat">
+      <div class="session-stat-num">${session.eplInspiration.split(' ')[0]}</div>
+      <div class="session-stat-label">EPL inspiration</div>
+    </div>
+  `;
+
+  // Timeline
+  const timelineBar = document.getElementById('timelineBar');
+  const timelineLegend = document.getElementById('timelineLegend');
+  timelineBar.innerHTML = '';
+  timelineLegend.innerHTML = '';
+
+  session.phases.forEach(phase => {
+    const pct = (phase.duration / session.totalDuration * 100).toFixed(1);
+    const color = phaseColors[phase.name] || '#64748b';
+    timelineBar.innerHTML += `
+      <div class="timeline-segment" style="width:${pct}%;background:${color}" title="${phase.name} — ${phase.duration} min">
+        ${pct > 8 ? phase.duration + 'm' : ''}
+      </div>
+    `;
+    timelineLegend.innerHTML += `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${color}"></div>
+        ${phase.name} (${phase.duration}m)
+      </div>
+    `;
+  });
+
+  // Phases
+  const phasesList = document.getElementById('phasesList');
+  phasesList.innerHTML = session.phases.map((phase, i) => {
+    const color = phaseColors[phase.name] || '#64748b';
+    const intensityColors = { 'Low': '#06b6d4', 'Medium': '#f59e0b', 'High': '#ef4444' };
+    const intensityColor = intensityColors[phase.intensity] || '#64748b';
+
+    return `
+      <div class="phase-card" id="phase-${i}">
+        <div class="phase-card-header" onclick="togglePhaseCard(${i})">
+          <div class="phase-color-bar" style="background:${color}"></div>
+          <div class="phase-header-info">
+            <div class="phase-header-name">${phase.name} — ${phase.drillName}</div>
+            <div class="phase-header-meta">
+              <span>⭐ ${phase.eplReference}</span>
+              <span style="color:${intensityColor};font-weight:600">● ${phase.intensity} intensity</span>
+              <span>${phase.objective}</span>
+            </div>
+          </div>
+          <div class="phase-header-duration">${phase.duration}m</div>
+          <div class="phase-expand">▼</div>
+        </div>
+        <div class="phase-card-body">
+          <div class="phase-section-label">Drill</div>
+          <div class="phase-drill-name">${phase.drillName}</div>
+          <div class="phase-epl-tag">⭐ Inspired by ${phase.eplReference}</div>
+
+          <div class="phase-section-label">Description</div>
+          <div class="phase-description">${phase.description}</div>
+
+          <div class="phase-section-label">Setup</div>
+          <div class="phase-description">${phase.setup}</div>
+
+          <div class="phase-section-label">Instructions</div>
+          <ul class="instructions-list">
+            ${phase.instructions.map((step, j) => `
+              <li>
+                <div class="step-num">${j + 1}</div>
+                <span>${step}</span>
+              </li>
+            `).join('')}
+          </ul>
+
+          <div class="phase-section-label">Coaching Points</div>
+          <div class="coaching-points">
+            <ul>
+              ${phase.coachingPoints.map(pt => `<li>${pt}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  output.style.display = 'block';
+  output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function togglePhaseCard(i) {
+  document.getElementById('phase-' + i).classList.toggle('expanded');
+}
+
+function shareSession() {
+  if (navigator.share) {
+    navigator.share({ title: 'DrillGen Session Plan', text: 'Check out this session plan from DrillGen!', url: window.location.href });
+  } else {
+    navigator.clipboard.writeText(window.location.href);
+    alert('✓ Link copied! Share it with your players and parents.');
+  }
+}
+
+function saveSession() {
+  alert('💾 Session saved to your library! (Full save feature coming soon — login required)');
+}
+
+init();
+</script>
+</body>
+</html>
