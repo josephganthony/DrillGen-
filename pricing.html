@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrillGen — Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #16a34a;
+  --green-light: #4ade80;
+  --green-pale: #f0fdf4;
+  --green-dark: #14532d;
+  --pitch: #0c1a0e;
+  --white: #ffffff;
+  --off: #f8faf8;
+  --slate: #0f172a;
+  --mid: #334155;
+  --light: #64748b;
+  --border: #e2e8f0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--off); color: var(--slate); min-height: 100vh; }
+
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 66px; background: rgba(255,255,255,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 5%; justify-content: space-between; }
+.logo { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.logo-wordmark { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; display: flex; flex-direction: column; line-height: 1; }
+.logo-drill { color: #0f172a; }
+.logo-gen { color: #16a34a; }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.btn-text { background: none; border: none; font-size: 14px; font-weight: 600; color: #334155; cursor: pointer; font-family: 'Inter', sans-serif; padding: 8px 14px; border-radius: 8px; text-decoration: none; display: inline-block; transition: all 0.2s; }
+.btn-text:hover { color: var(--green); background: var(--green-pale); }
+.btn-nav-cta { background: #16a34a; color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; padding: 10px 22px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+.btn-nav-cta:hover { background: #15803d; }
+
+.page { padding-top: 66px; max-width: 1060px; margin: 0 auto; padding-left: 5%; padding-right: 5%; padding-bottom: 80px; }
+
+.page-header { padding: 56px 0 40px; text-align: center; }
+.page-tag { display: inline-block; background: var(--green-pale); color: var(--green-dark); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; margin-bottom: 16px; }
+.page-h1 { font-family: 'Syne', sans-serif; font-size: clamp(30px, 4vw, 52px); font-weight: 800; color: var(--slate); margin-bottom: 12px; line-height: 1.08; }
+.page-h1 em { font-style: normal; color: var(--green); }
+.page-sub { font-size: 17px; color: var(--light); line-height: 1.75; max-width: 500px; margin: 0 auto 32px; }
+
+/* TRIAL BANNER */
+.trial-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--pitch);
+  border: 1px solid rgba(74,222,128,0.2);
+  border-radius: 100px;
+  padding: 10px 24px;
+  margin-bottom: 36px;
+}
+.trial-icon { font-size: 18px; }
+.trial-text { font-size: 14px; font-weight: 600; color: white; }
+.trial-text span { color: #4ade80; }
+
+/* BILLING TOGGLE */
+.billing-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  padding: 5px;
+  gap: 4px;
+  margin-bottom: 48px;
+  position: relative;
+}
+
+.toggle-btn {
+  padding: 9px 24px;
+  border-radius: 100px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--light);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.toggle-btn.active {
+  background: var(--slate);
+  color: white;
+}
+
+.save-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #dcfce7;
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-left: 4px;
+}
+
+/* PRICING GRID */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.price-card {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  padding: 36px 28px;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.price-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.09);
+}
+
+.price-card.featured {
+  background: var(--pitch);
+  border-color: var(--green);
+  box-shadow: 0 8px 32px rgba(22,163,74,0.2);
+  transform: scale(1.04);
+}
+
+.price-card.featured:hover {
+  transform: scale(1.04) translateY(-4px);
+}
+
+.popular-pill {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--green);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 18px;
+  border-radius: 100px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+/* PLAN HEADER */
+.plan-icon { font-size: 28px; margin-bottom: 14px; }
+
+.plan-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.plan-name-light { color: var(--light); }
+.plan-name-dark { color: #64748b; }
+
+.plan-tagline {
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.plan-tagline-light { color: var(--light); }
+.plan-tagline-dark { color: #94a3b8; }
+
+/* PRICE */
+.price-wrap { margin-bottom: 6px; display: flex; align-items: baseline; gap: 3px; }
+.price-sup { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+.price-sup-light { color: var(--slate); }
+.price-sup-dark { color: white; }
+.price-main { font-family: 'Syne', sans-serif; font-size: 54px; font-weight: 800; line-height: 1; }
+.price-main-light { color: var(--slate); }
+.price-main-dark { color: white; }
+.price-per { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.price-per-light { color: var(--light); }
+.price-per-dark { color: #64748b; }
+.price-annual { font-size: 12px; font-weight: 600; margin-bottom: 20px; height: 18px; }
+.price-annual-light { color: var(--green); }
+.price-annual-dark { color: #4ade80; }
+
+/* TRIAL NOTE */
+.trial-note {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-bottom: 22px;
+}
+.trial-note-pale { background: var(--green-pale); color: var(--green-dark); }
+.trial-note-dark { background: rgba(74,222,128,0.1); color: #4ade80; }
+
+/* DIVIDER */
+.plan-divider { height: 1px; margin: 0 0 20px; }
+.divider-light { background: var(--border); }
+.divider-dark { background: rgba(255,255,255,0.07); }
+
+/* FEATURES */
+.plan-feats { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; }
+.plan-feats li { font-size: 14px; display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+.plan-feats-light li { color: var(--mid); }
+.plan-feats-dark li { color: #94a3b8; }
+.feat-check { width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.feat-check-light { background: var(--green-pale); color: var(--green); }
+.feat-check-dark { background: rgba(74,222,128,0.12); color: #4ade80; }
+.feat-highlight { font-weight: 700; }
+.feat-highlight-light { color: var(--slate); }
+.feat-highlight-dark { color: white; }
+
+/* BUTTONS */
+.btn-plan { width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; border: none; }
+.btn-green { background: var(--green); color: white; box-shadow: 0 4px 16px rgba(22,163,74,0.32); }
+.btn-green:hover { background: #15803d; transform: translateY(-1px); }
+.btn-outline { background: none; border: 1.5px solid var(--border); color: var(--slate); }
+.btn-outline:hover { border-color: var(--green); color: var(--green); }
+.btn-outline-dark { background: none; border: 1.5px solid rgba(255,255,255,0.15); color: #94a3b8; }
+.btn-outline-dark:hover { border-color: rgba(255,255,255,0.35); color: white; }
+
+/* FAQ */
+.faq-section { margin-top: 72px; }
+.faq-title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--slate); text-align: center; margin-bottom: 32px; }
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.faq-item { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 22px; transition: all 0.2s; }
+.faq-item:hover { border-color: var(--green-light); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.faq-q { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--slate); margin-bottom: 8px; }
+.faq-a { font-size: 14px; color: var(--light); line-height: 1.7; }
+
+/* BOTTOM CTA */
+.bottom-cta { background: var(--green); border-radius: 24px; padding: 52px 40px; text-align: center; margin-top: 56px; position: relative; overflow: hidden; }
+.bottom-cta::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,0.025) 60px, rgba(255,255,255,0.025) 61px); }
+.bottom-cta-inner { position: relative; z-index: 1; }
+.bottom-cta h2 { font-family: 'Syne', sans-serif; font-size: clamp(24px, 3vw, 38px); font-weight: 800; color: white; margin-bottom: 12px; }
+.bottom-cta p { font-size: 16px; color: rgba(255,255,255,0.8); margin-bottom: 28px; }
+.btn-cta-white { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: white; color: var(--green-dark); border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.2); }
+.cta-note { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.6); }
+
+.pricing-note { text-align: center; margin-top: 24px; font-size: 13px; color: var(--light); }
+
+@media (max-width: 860px) {
+  .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .price-card.featured { transform: none; }
+  .price-card.featured:hover { transform: translateY(-4px); }
+  .faq-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <svg width="38" height="32" viewBox="0 0 38 32" fill="none">
+      <rect x="0" y="4" width="26" height="5" rx="2.5" fill="#16a34a"/>
+      <rect x="0" y="13" width="20" height="5" rx="2.5" fill="#16a34a" opacity="0.75"/>
+      <rect x="0" y="22" width="14" height="5" rx="2.5" fill="#16a34a" opacity="0.5"/>
+      <circle cx="32" cy="24" r="6" fill="#0f172a" stroke="#16a34a" stroke-width="1.5"/>
+      <path d="M32 19.5 L33.2 22.5 L32 23.5 L30.8 22.5 Z" fill="#16a34a" opacity="0.7"/>
+      <path d="M28.5 22.5 L30.8 22.5 L30 25 L28 24.5 Z" fill="#16a34a" opacity="0.5"/>
+      <path d="M35.5 22.5 L33.2 22.5 L34 25 L36 24.5 Z" fill="#16a34a" opacity="0.5"/>
+    </svg>
+    <div class="logo-wordmark" style="margin-left:8px">
+      <span class="logo-drill">Drill</span>
+      <span class="logo-gen">Gen</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <a href="session-planner.html" class="btn-text">Session Planner</a>
+    <a href="drill-generator.html" class="btn-text">Drill Generator</a>
+    <a href="index.html" class="btn-text">← Home</a>
+    <button class="btn-nav-cta" onclick="window.location.href='session-planner.html'">Start Free Trial</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-tag">Pricing</div>
+    <h1 class="page-h1">Simple pricing.<br><em>No surprises.</em></h1>
+    <p class="page-sub">Start completely free for 30 days. No credit card required. Upgrade when you're ready.</p>
+
+    <div class="trial-banner">
+      <div class="trial-icon">🎁</div>
+      <div class="trial-text">Free tier includes <span>5 session plans</span>, <span>5 drill generations</span> and <span>unlimited match day</span> — no credit card needed</div>
+    </div>
+
+    <!-- BILLING TOGGLE -->
+    <div class="billing-toggle">
+      <button class="toggle-btn active" id="monthlyBtn" onclick="setBilling('monthly')">Monthly</button>
+      <button class="toggle-btn" id="annualBtn" onclick="setBilling('annual')">
+        Annual <span class="save-badge">2 months free</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PRICING GRID -->
+  <div class="pricing-grid">
+
+    <!-- FREE TIER -->
+    <div class="price-card">
+      <div class="plan-icon">🆓</div>
+      <div class="plan-name plan-name-light">Free</div>
+      <div class="plan-tagline plan-tagline-light">Try DrillGen before you commit</div>
+      <div class="price-wrap">
+        <div class="price-sup price-sup-light" style="font-size:14px"></div>
+        <div class="price-main price-main-light" style="font-size:42px">$0</div>
+      </div>
+      <div class="price-per price-per-light">forever free</div>
+      <div class="price-annual price-annual-light" style="min-height:18px"></div>
+      <div class="trial-note trial-note-pale">No credit card — ever</div>
+      <div class="plan-divider divider-light"></div>
+      <ul class="plan-feats plan-feats-light">
+        <li><div class="feat-check feat-check-light">✓</div><span><span class="feat-highlight feat-highlight-light">5</span> session plans</span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span><span class="feat-highlight feat-highlight-light">5</span> drill generations</span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span><span class="feat-highlight feat-highlight-light">Unlimited</span> match day builder</span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span>Share to players & parents</span></li>
+      </ul>
+      <button class="btn-plan btn-outline" onclick="window.location.href='session-planner.html'">Get Started Free</button>
+    </div>
+
+    <!-- SINGLE COACH -->
+    <div class="price-card featured">
+      <div class="popular-pill">Most Popular</div>
+      <div class="plan-icon">⚽</div>
+      <div class="plan-name plan-name-dark">Single Coach</div>
+      <div class="plan-tagline plan-tagline-dark">One coach, unlimited everything</div>
+      <div class="price-wrap">
+        <div class="price-sup price-sup-dark">$</div>
+        <div class="price-main price-main-dark" id="price1">9</div>
+      </div>
+      <div class="price-per price-per-dark" id="per1">per month</div>
+      <div class="price-annual price-annual-dark" id="annual1"></div>
+      <div class="trial-note trial-note-dark">Starts with 5 free sessions & drills</div>
+      <div class="plan-divider divider-dark"></div>
+      <ul class="plan-feats plan-feats-dark">
+        <li><div class="feat-check feat-check-dark">✓</div><span><span class="feat-highlight feat-highlight-dark">Unlimited</span> session plans</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span><span class="feat-highlight feat-highlight-dark">Unlimited</span> drill generation</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>Unlimited match day builder</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>Save sessions to your library</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>Share to players & parents</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>EPL-inspired drill library</span></li>
+      </ul>
+      <button class="btn-plan btn-green" onclick="window.location.href='session-planner.html'">Get Started</button>
+    </div>
+
+    <!-- MULTI COACH -->
+    <div class="price-card">
+      <div class="plan-icon">👥</div>
+      <div class="plan-name plan-name-light">Multi Coach</div>
+      <div class="plan-tagline plan-tagline-dark">For clubs with multiple coaches across age groups</div>
+      <div class="price-wrap">
+        <div class="price-sup price-sup-dark">$</div>
+        <div class="price-main price-main-dark" id="price2">29</div>
+      </div>
+      <div class="price-per price-per-dark" id="per2">per month</div>
+      <div class="price-annual price-annual-dark" id="annual2"></div>
+      <div class="trial-note trial-note-dark">30 days free — no card needed</div>
+      <div class="plan-divider divider-dark"></div>
+      <ul class="plan-feats plan-feats-dark">
+        <li><div class="feat-check feat-check-dark">✓</div><span>Everything in Single Coach</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span><span class="feat-highlight feat-highlight-dark">Up to 5 coaches</span></span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>Shared club drill library</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>Shared session templates</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>Coach-to-coach sharing</span></li>
+        <li><div class="feat-check feat-check-dark">✓</div><span>Priority email support</span></li>
+      </ul>
+      <button class="btn-plan btn-green" onclick="window.location.href='session-planner.html'">Start Free Trial</button>
+    </div>
+
+    <!-- FULL CLUB -->
+    <div class="price-card">
+      <div class="plan-icon">🏆</div>
+      <div class="plan-name plan-name-light">Full Club</div>
+      <div class="plan-tagline plan-tagline-light">The complete solution for serious clubs</div>
+      <div class="price-wrap">
+        <div class="price-sup price-sup-light">$</div>
+        <div class="price-main price-main-light" id="price3">79</div>
+      </div>
+      <div class="price-per price-per-light" id="per3">per month</div>
+      <div class="price-annual price-annual-light" id="annual3"></div>
+      <div class="trial-note trial-note-pale">30 days free — no card needed</div>
+      <div class="plan-divider divider-light"></div>
+      <ul class="plan-feats plan-feats-light">
+        <li><div class="feat-check feat-check-light">✓</div><span>Everything in Multi Coach</span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span><span class="feat-highlight feat-highlight-light">Unlimited coaches</span></span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span>All age groups under one account</span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span>Full club drill & session library</span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span>Priority support</span></li>
+        <li><div class="feat-check feat-check-light">✓</div><span>First access to new features</span></li>
+      </ul>
+      <button class="btn-plan btn-outline" onclick="window.location.href='session-planner.html'">Start Free Trial</button>
+    </div>
+
+  </div>
+
+  <div class="pricing-note">
+    All prices in AUD. Cancel any time. No lock-in contracts. Switch plans whenever you need.
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="faq-title">Common questions</div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">Do I need a credit card to start?</div>
+        <div class="faq-a">No. Your 30-day free trial starts immediately with no credit card required. You only need to add payment details if you decide to continue after the trial.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What happens after my free trial?</div>
+        <div class="faq-a">After 30 days you'll be asked to choose a plan. If you don't upgrade, you keep access to basic features only. No surprise charges — ever.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I switch plans later?</div>
+        <div class="faq-a">Absolutely. Upgrade or downgrade any time. If you upgrade mid-month you're only charged the difference. If you downgrade it takes effect at the next billing date.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How does annual billing work?</div>
+        <div class="faq-a">Pay upfront for 12 months and get 2 months completely free — that's like paying for 10 and getting 12. Annual plans can be cancelled but are non-refundable after 30 days.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What's the difference between plans?</div>
+        <div class="faq-a">Single Coach is for one coach managing one team. Multi Coach adds up to 5 coaches with shared libraries. Full Club gives unlimited coaches with club branding and analytics.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is DrillGen right for junior coaches?</div>
+        <div class="faq-a">100%. DrillGen was built specifically for grassroots coaches in Australia. Every drill and session plan is age-appropriate from U6 through to senior level.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <div class="bottom-cta-inner">
+      <h2>Ready to coach smarter?</h2>
+      <p>Join DrillGen free for 30 days. No credit card. No commitment.</p>
+      <button class="btn-cta-white" onclick="window.location.href='session-planner.html'">⚽ Start Your Free Trial</button>
+      <div class="cta-note">30 days free. Then from $9/month. Cancel any time.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let billing = 'monthly';
+
+const prices = {
+  monthly: { p1: 9, p2: 29, p3: 79 },
+  annual: { p1: 75, p2: 242, p3: 658 }
+};
+
+const monthlyEquiv = {
+  annual: { p1: '6.25', p2: '20.17', p3: '54.83' }
+};
+
+function setBilling(type) {
+  billing = type;
+  document.getElementById('monthlyBtn').classList.toggle('active', type === 'monthly');
+  document.getElementById('annualBtn').classList.toggle('active', type === 'annual');
+
+  if (type === 'monthly') {
+    document.getElementById('price1').textContent = '9';
+    document.getElementById('price2').textContent = '29';
+    document.getElementById('price3').textContent = '79';
+    document.getElementById('per1').textContent = 'per month';
+    document.getElementById('per2').textContent = 'per month';
+    document.getElementById('per3').textContent = 'per month';
+    document.getElementById('annual1').textContent = '';
+    document.getElementById('annual2').textContent = '';
+    document.getElementById('annual3').textContent = '';
+  } else {
+    document.getElementById('price1').textContent = '75';
+    document.getElementById('price2').textContent = '242';
+    document.getElementById('price3').textContent = '658';
+    document.getElementById('per1').textContent = 'per year';
+    document.getElementById('per2').textContent = 'per year';
+    document.getElementById('per3').textContent = 'per year';
+    document.getElementById('annual1').textContent = '= $6.25/month — 2 months free';
+    document.getElementById('annual2').textContent = '= $20.17/month — 2 months free';
+    document.getElementById('annual3').textContent = '= $54.83/month — 2 months free';
+  }
+}
+</script>
+</body>
+</html>
