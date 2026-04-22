@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrillGen — Welcome to Pro!</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --green: #16a34a; --green-light: #4ade80; --green-pale: #f0fdf4; --green-dark: #14532d; --pitch: #0c1a0e; --white: #ffffff; --off: #f8faf8; --slate: #0f172a; --mid: #334155; --light: #64748b; --border: #e2e8f0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--pitch); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; }
+.bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; }
+.bg-glow { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(22,163,74,0.15) 0%, transparent 65%); top: -100px; left: 50%; transform: translateX(-50%); }
+.card { position: relative; z-index: 2; background: white; border-radius: 24px; padding: 48px 40px; width: 100%; max-width: 480px; box-shadow: 0 24px 64px rgba(0,0,0,0.4); text-align: center; }
+.success-icon { width: 72px; height: 72px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+.success-icon svg { width: 36px; height: 36px; }
+.title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--slate); margin-bottom: 10px; }
+.subtitle { font-size: 16px; color: var(--light); line-height: 1.6; margin-bottom: 32px; }
+.plan-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--green-pale); border: 1px solid rgba(22,163,74,0.2); color: var(--green-dark); font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: 100px; margin-bottom: 32px; }
+.features { background: var(--off); border-radius: 14px; padding: 20px; margin-bottom: 28px; text-align: left; }
+.feature-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--mid); padding: 6px 0; }
+.feature-check { width: 20px; height: 20px; background: var(--green-pale); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.btn-start { display: block; width: 100%; padding: 15px; background: var(--green); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; box-shadow: 0 4px 16px rgba(22,163,74,0.3); text-decoration: none; margin-bottom: 12px; }
+.btn-start:hover { background: #15803d; transform: translateY(-1px); }
+.btn-secondary { display: block; width: 100%; padding: 13px; background: none; border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--mid); cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none; }
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<canvas class="confetti" id="confetti"></canvas>
+
+<div class="card">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="#16a34a"/>
+      <path d="M7 12l3 3 7-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="title">You're on Pro!</div>
+  <div class="subtitle">Welcome to DrillGen Pro. Your account has been upgraded and you now have unlimited access.</div>
+
+  <div class="plan-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#16a34a"/></svg>
+    <span id="planName">Pro Plan Activated</span>
+  </div>
+
+  <div class="features">
+    <div class="feature-item"><div class="feature-check">✓</div>Unlimited session plans</div>
+    <div class="feature-item"><div class="feature-check">✓</div>Unlimited drill generation</div>
+    <div class="feature-item"><div class="feature-check">✓</div>Unlimited match day builder</div>
+    <div class="feature-item"><div class="feature-check">✓</div>Save sessions to your library</div>
+    <div class="feature-item"><div class="feature-check">✓</div>EPL-inspired drill library</div>
+  </div>
+
+  <a href="session-planner.html" class="btn-start">Start Building Sessions</a>
+  <a href="my-sessions.html" class="btn-secondary">View My Sessions</a>
+</div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDCEWvKhexYsJQqRKkZgTmedLaAPdrKrgA",
+    authDomain: "drillgen-2f910.firebaseapp.com",
+    projectId: "drillgen-2f910",
+    storageBucket: "drillgen-2f910.firebasestorage.app",
+    messagingSenderId: "406136862852",
+    appId: "1:406136862852:web:95bdb0ef7fcae2f050ead1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      // Mark user as pro in localStorage
+      localStorage.setItem('drillgen_promo', 'true');
+      localStorage.setItem('drillgen_pro_email', user.email);
+    }
+  });
+
+  // Get plan name from URL
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  if (sessionId) {
+    document.getElementById('planName').textContent = 'Pro Plan Activated';
+  }
+</script>
+
+<script>
+// Confetti animation
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const colors = ['#16a34a', '#4ade80', '#86efac', '#ffffff', '#fbbf24'];
+const pieces = Array.from({ length: 80 }, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * -canvas.height,
+  w: Math.random() * 10 + 5,
+  h: Math.random() * 6 + 3,
+  color: colors[Math.floor(Math.random() * colors.length)],
+  speed: Math.random() * 3 + 2,
+  angle: Math.random() * Math.PI * 2,
+  spin: (Math.random() - 0.5) * 0.15,
+  drift: (Math.random() - 0.5) * 1.5
+}));
+
+let frame = 0;
+function animateConfetti() {
+  if (frame > 180) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  pieces.forEach(p => {
+    p.y += p.speed;
+    p.x += p.drift;
+    p.angle += p.spin;
+    if (p.y > canvas.height) { p.y = -20; p.x = Math.random() * canvas.width; }
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = Math.max(0, 1 - frame / 180);
+    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+    ctx.restore();
+  });
+  frame++;
+  requestAnimationFrame(animateConfetti);
+}
+animateConfetti();
+</script>
+</body>
+</html>
